@@ -9,7 +9,7 @@ export interface Memo {
   text: string
   createdAt: number
   updatedAt: number
-  source: typeof MemoSource
+  source: keyof typeof MemoSource
 }
 
 export interface MemoSummary extends Omit<Memo, 'text'> {
