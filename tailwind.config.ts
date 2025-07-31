@@ -5,7 +5,6 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Пригодится, если захотите непрозрачный оранжевый
         orangeBrand: '#FFA500',
       },
       boxShadow: {
