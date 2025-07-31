@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "test": "vitest",
     "test:run": "vitest run",
-    "lint": "eslint src --ext .ts,.tsx",
+    "lint": "eslint . --ext .ts,.tsx,.js,.jsx --max-warnings=0 --cache",
     "typecheck": "tsc --noEmit",
     "prepare": "husky"
   },
