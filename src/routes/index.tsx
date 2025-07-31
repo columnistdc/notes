@@ -1,6 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom'
-import { WIP } from '../pages/WIP.tsx'
+
 import StartPage from '../pages/StartPage.tsx'
+import { WIP } from '../pages/WIP.tsx'
 
 export const router = createBrowserRouter([
   { path: '/', element: <StartPage /> },

@@ -1,4 +1,5 @@
 import Dexie, { type Table } from 'dexie'
+
 import type { Memo, MemoAudio } from './types.ts'
 
 class MemosDB extends Dexie {

@@ -1,7 +1,8 @@
 import { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import Button from '../components/Button.tsx'
+
 import main from '../assets/main.webp'
+import Button from '../components/Button.tsx'
 import { countMemos } from '../db/dbApi.ts'
 
 const HEADING = 'My Voice Memos'
