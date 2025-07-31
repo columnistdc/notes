@@ -5,6 +5,8 @@ import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import tseslint from 'typescript-eslint'
 import tailwind from 'eslint-plugin-tailwindcss'
+import prettierPlugin from 'eslint-plugin-prettier'
+import configPrettier from 'eslint-config-prettier'
 
 export default tseslint.config(
   { ignores: ['dist', 'build', 'coverage', '.vite'] },
@@ -28,6 +30,7 @@ export default tseslint.config(
     plugins: {
       react,
       tailwindcss: tailwind,
+      prettier: prettierPlugin,
     },
 
     settings: {
@@ -54,7 +57,7 @@ export default tseslint.config(
       'tailwindcss/no-contradicting-classname': 'error',
     },
   },
-
+  configPrettier,
   {
     files: ['**/*.{test,spec}.{ts,tsx,js,jsx}'],
     languageOptions: {
