@@ -1,4 +1,3 @@
-// eslint.config.js
 import js from '@eslint/js'
 import globals from 'globals'
 import react from 'eslint-plugin-react'
@@ -13,7 +12,6 @@ export default tseslint.config(
   js.configs.recommended,
   ...tseslint.configs.recommended,
 
-  // <-- Этот пресет уже подключает plugin "react-hooks"
   reactHooks.configs['recommended-latest'],
   reactRefresh.configs.vite,
 
@@ -27,7 +25,6 @@ export default tseslint.config(
       globals: { ...globals.browser, ...globals.node },
     },
 
-    // ВАЖНО: не объявляем 'react-hooks' здесь повторно
     plugins: {
       react,
       tailwindcss: tailwind,
@@ -38,37 +35,26 @@ export default tseslint.config(
       tailwindcss: {
         callees: ['clsx', 'ctl', 'classnames'],
         removeDuplicates: true,
-        // config: 'tailwind.config.ts',
       },
     },
 
     rules: {
-      // React
       'react/jsx-uses-react': 'off',
       'react/react-in-jsx-scope': 'off',
       'react/no-unknown-property': ['error', { ignore: ['css'] }],
-
-      // НЕ дублируем: ...reactHooks.configs.recommended.rules
-
-      // TypeScript
       '@typescript-eslint/consistent-type-imports': ['warn', { prefer: 'type-imports' }],
       '@typescript-eslint/no-unused-vars': [
         'warn',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
-
-      // Общие
       'no-console': ['warn', { allow: ['warn', 'error'] }],
       'no-debugger': 'warn',
       'prefer-const': 'warn',
-
-      // Tailwind
       'tailwindcss/classnames-order': 'warn',
       'tailwindcss/no-contradicting-classname': 'error',
     },
   },
 
-  // Блок для тестов
   {
     files: ['**/*.{test,spec}.{ts,tsx,js,jsx}'],
     languageOptions: {

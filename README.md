@@ -1,8 +1,8 @@
 # My Voice Memos
 
-Простое веб‑приложение для создания текстовых заметок с голосовым вводом (Web Speech API) и хранением в IndexedDB (Dexie).
+A simple web application for creating text notes with voice input (Web Speech API) and storing them in IndexedDB (Dexie).
 
-## Стек
+## Stack
 
 - React + TypeScript + Vite
 - Web Speech API (SpeechRecognition)
@@ -11,15 +11,15 @@
 - Vitest + React Testing Library
 - GitHub Actions (CI)
 
-## Дизайн и решения
+## Design and Decisions
 
-- **IndexedDB** для асинхронных CRUD (демонстрация async/await).
-- **Хук useSpeechRecognition** инкапсулирует работу с Web Speech API и вендорным префиксом.
-- **Простая архитектура**: страницы (List/Edit), компоненты (List, Form), слой БД (Dexie).
-- **Кнопки** со стильной полупрозрачной оранжевой рамкой (rgba(255,165,0,.5)).
-- Доступность: required‑поля, aria‑состояния, семантичные элементы.
+- **IndexedDB** for asynchronous CRUD (demonstration of async/await).
+- **Hook useSpeechRecognition** encapsulates work with Web Speech API and vendor prefix.
+- **Simple architecture**: pages (List/Edit), components (List, Form), database layer (Dexie).
+- **Buttons** with a stylish translucent orange border (rgba(255,165,0,.5)).
+- Accessibility: required fields, aria states, semantic elements.
 
-## Локальный старт
+## Local Start
 
 ```bash
 npm i
