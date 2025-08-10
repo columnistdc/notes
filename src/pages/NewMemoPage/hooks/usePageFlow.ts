@@ -27,20 +27,26 @@ export default function usePageFlow(options: PageFlowOptions): PageFlow {
   const [saving, setSaving] = useState(false)
   const [showConfirm, setShowConfirm] = useState<null | 'back' | 'leave'>(null)
 
+  const navigateToMemos = useCallback(async () => {
+    const total = await countMemos()
+    navigate(total === 0 ? '/' : '/memos', { replace: true })
+  }, [navigate])
+
   const handleBack = useCallback(async () => {
-    if (dirty && text.trim()) {
+    const trimmedText = text.trim()
+    if (dirty && trimmedText) {
       setShowConfirm('back')
       return
     }
-    const total = await countMemos()
-    navigate(total === 0 ? '/' : '/memos', { replace: true })
-  }, [dirty, text, navigate])
+    navigateToMemos()
+  }, [text, dirty, navigateToMemos])
 
   const saveNote = useCallback(async () => {
-    if (!text.trim()) return
+    const trimmedText = text.trim()
+    if (!trimmedText) return
     setSaving(true)
     try {
-      await createMemo(text.trim(), title)
+      await createMemo(trimmedText, title)
       localStorage.removeItem(draftKey)
       localStorage.removeItem(`${draftKey}-title`)
       onSave?.()
@@ -53,9 +59,8 @@ export default function usePageFlow(options: PageFlowOptions): PageFlow {
     localStorage.removeItem(draftKey)
     localStorage.removeItem(`${draftKey}-title`)
     onDiscard?.()
-    const total = await countMemos()
-    navigate(total === 0 ? '/' : '/memos', { replace: true })
-  }, [draftKey, onDiscard, navigate])
+    navigateToMemos()
+  }, [draftKey, onDiscard, navigateToMemos])
 
   return { saving, showConfirm, setShowConfirm, handleBack, saveNote, discardAndLeave }
 }
