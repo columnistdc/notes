@@ -1,15 +1,9 @@
-export const MemoSource = {
-  Keyboard: 'keyboard',
-  Speech: 'speech',
-} as const
-
 export interface Memo {
   id?: number
   title: string
   text: string
   createdAt: number
   updatedAt: number
-  source: keyof typeof MemoSource
 }
 
 export interface MemoSummary extends Omit<Memo, 'text'> {
