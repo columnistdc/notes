@@ -1,8 +1,8 @@
 import { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import main from '../../assets/main.webp'
-import { countMemos } from '../../db/dbApi.ts'
+import main from '@/assets/main.webp'
+import { countMemos } from '@/db/dbApi.ts'
 
 import { LandingIntro } from './components/LandingIntro.tsx'
 

@@ -1,4 +1,4 @@
-import { deriveTitle } from '../helpers/deriveTitle.ts'
+import { deriveTitle } from '@/helpers/deriveTitle.ts'
 
 import { memosDB } from './db.ts'
 

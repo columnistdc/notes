@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 
-import { useSpeechRecognition } from '../hooks/useSpeechRecognition'
+import { useSpeechRecognition } from '@/hooks/useSpeechRecognition'
 
 type Props = {
   onResult: (text: string) => void

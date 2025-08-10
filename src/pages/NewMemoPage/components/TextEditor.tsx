@@ -1,6 +1,6 @@
 import type { RefObject } from 'react'
 
-import FabMic from '../../../components/FabMic.tsx'
+import FabMic from '@/components/FabMic.tsx'
 
 type TextEditorProps = {
   text: string

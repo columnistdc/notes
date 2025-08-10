@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { countMemos, createMemo } from '../../../db/dbApi.ts'
+import { countMemos, createMemo } from '@/db/dbApi.ts'
 
 export type PageFlowOptions = {
   text: string
