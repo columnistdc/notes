@@ -5,17 +5,3 @@ export interface Memo {
   createdAt: number
   updatedAt: number
 }
-
-export interface MemoSummary extends Omit<Memo, 'text'> {
-  id: number
-  hasAudio: boolean
-}
-
-export interface MemoAudio {
-  id: number
-  memoId: number
-  blob: Blob
-  mimeType: string
-  durationMs: number
-  createdAt: number
-}
