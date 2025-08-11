@@ -12,7 +12,7 @@ interface PageFlowOptions {
   onSave?: () => void
   onDiscard?: () => void
   onValidationError?: () => void
-  mode?: MemoPageMode
+  mode: MemoPageMode
 }
 
 interface PageFlow {
@@ -63,7 +63,12 @@ export function usePageFlow(options: PageFlowOptions): PageFlow {
     setSaving(true)
     try {
       if (mode === MemoPageMode.Edit) {
-        await updateMemoById(Number(id), {
+        const memoId = Number(id)
+        if (!id || isNaN(memoId)) {
+          console.error('Invalid memo ID:', id)
+          return
+        }
+        await updateMemoById(memoId, {
           text: trimmedText,
           title: trimmedTitle,
         })

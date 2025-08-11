@@ -29,7 +29,12 @@ export function useTextController(options: TextControllerOptions): TextControlle
 
   useEffect(() => {
     if (mode === MemoPageMode.Edit) {
-      getMemoById(Number(id)).then((memo) => {
+      const memoId = Number(id)
+      if (!id || isNaN(memoId)) {
+        console.error('Invalid memo ID:', id)
+        return
+      }
+      getMemoById(Number(memoId)).then((memo) => {
         if (memo) {
           const memoText = memo.text || ''
           const memoTitle = memo.title || ''

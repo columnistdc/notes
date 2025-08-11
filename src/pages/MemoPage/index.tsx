@@ -28,6 +28,7 @@ export const MemoPage: FC<Props> = ({ mode }) => {
     usePageFlow({
       text,
       title,
+      mode,
       hasChanges,
       draftKey: MEMO_DRAFT_KEY,
       onSave: () => setHasChanges(false),
