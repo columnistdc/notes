@@ -1,10 +1,9 @@
 import Dexie, { type Table } from 'dexie'
 
-import type { Memo, MemoAudio } from './types.ts'
+import type { Memo } from './types.ts'
 
 class MemosDB extends Dexie {
   memos!: Table<Memo, number>
-  memos_audio!: Table<MemoAudio, number>
 
   constructor() {
     super('voice-memos')
