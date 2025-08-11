@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { listMemoSummaries } from '@/db/dbApi.ts'
 import type { Memo } from '@/db/types.ts'
 
-export type MemosData = {
+interface MemosData {
   items: Memo[] | null
   refetchItems: () => Promise<void>
 }

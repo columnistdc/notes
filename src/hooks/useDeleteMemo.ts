@@ -2,7 +2,7 @@ import { useCallback, useRef, useState } from 'react'
 
 import { deleteMemo } from '@/db/dbApi.ts'
 
-export type DeleteMemoHook = {
+interface DeleteMemoHook {
   isDeleteConfirmShown: boolean
   toggleDeleteConfirmShown: () => void
   selectMemo: (memoId: number) => void

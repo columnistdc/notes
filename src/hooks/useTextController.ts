@@ -1,10 +1,15 @@
 import { type RefObject, useCallback, useEffect, useRef, useState } from 'react'
+import { useParams } from 'react-router-dom'
 
-export type TextControllerOptions = {
+import { MemoPageMode } from '@/constants.ts'
+import { getMemoById } from '@/db/dbApi.ts'
+
+interface TextControllerOptions {
   draftKey: string
+  mode: MemoPageMode
 }
 
-export type TextController = {
+interface TextController {
   title: string
   setTitle: (value: string) => void
   text: string
@@ -14,24 +19,41 @@ export type TextController = {
 }
 
 export function useTextController(options: TextControllerOptions): TextController {
-  const { draftKey } = options
+  const { draftKey, mode } = options
   const [title, setTitle] = useState('')
   const [text, setText] = useState('')
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
   const initialText = useRef('')
   const initialTitle = useRef('')
+  const { id } = useParams<{ id: string }>()
 
   useEffect(() => {
-    const draft = localStorage.getItem(draftKey) || ''
-    const titleDraft = localStorage.getItem(`${draftKey}-title`) || ''
+    if (mode === MemoPageMode.Edit) {
+      getMemoById(Number(id)).then((memo) => {
+        if (memo) {
+          const memoText = memo.text || ''
+          const memoTitle = memo.title || ''
+          setText(memoText)
+          setTitle(memoTitle)
+          initialText.current = memoText
+          initialTitle.current = memoTitle
+        }
+      })
+    } else {
+      const draft = localStorage.getItem(draftKey) || ''
+      const titleDraft = localStorage.getItem(`${draftKey}-title`) || ''
 
-    setText(draft)
-    setTitle(titleDraft)
-    initialText.current = draft
-    initialTitle.current = titleDraft
-  }, [draftKey])
+      setText(draft)
+      setTitle(titleDraft)
+      initialText.current = draft
+      initialTitle.current = titleDraft
+    }
+  }, [draftKey, id, mode])
 
   useEffect(() => {
+    if (mode === MemoPageMode.Edit) {
+      return
+    }
     const hasChanged = text !== initialText.current || title !== initialTitle.current
 
     const timeoutId = setTimeout(() => {
@@ -42,21 +64,22 @@ export function useTextController(options: TextControllerOptions): TextControlle
     }, 300)
 
     return () => clearTimeout(timeoutId)
-  }, [text, title, draftKey])
+  }, [text, title, draftKey, mode])
 
   useEffect(() => {
     const handler = (e: BeforeUnloadEvent) => {
       const hasChanged = text !== initialText.current || title !== initialTitle.current
-      if (hasChanged) {
+      if (hasChanged && mode !== MemoPageMode.Edit) {
         localStorage.setItem(draftKey, text)
         localStorage.setItem(`${draftKey}-title`, title)
       }
-      if (!text.trim() && !title.trim()) return
-      e.preventDefault()
+      if (hasChanged) {
+        e.preventDefault()
+      }
     }
     window.addEventListener('beforeunload', handler)
     return () => window.removeEventListener('beforeunload', handler)
-  }, [text, title, draftKey])
+  }, [text, title, draftKey, mode])
 
   const insertAtCursor = useCallback((snippet: string) => {
     const el = textareaRef.current

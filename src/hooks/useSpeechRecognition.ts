@@ -5,7 +5,7 @@ interface Grammar {
   weight?: number
 }
 
-export interface SpeechRecognitionHookOptions {
+interface SpeechRecognitionHookOptions {
   lang?: string
   continuous?: boolean
   interimResults?: boolean
@@ -14,7 +14,7 @@ export interface SpeechRecognitionHookOptions {
   onResult: (result: string) => void
 }
 
-export interface SpeechRecognitionHook {
+interface SpeechRecognitionHook {
   isSupported: boolean
   listening: boolean
   error: string | null

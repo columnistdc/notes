@@ -1,21 +1,27 @@
-import { useCallback, useState } from 'react'
+import { type FC, useCallback, useState } from 'react'
 
-import { ConfirmDialog } from './components/ConfirmDialog.tsx'
-import { NewMemoHeader } from './components/NewMemoHeader.tsx'
-import { SaveAlert } from './components/SaveAlert.tsx'
-import { TextEditor } from './components/TextEditor.tsx'
-import { TitleInput } from './components/TitleInput.tsx'
-import { usePageFlow } from './hooks/usePageFlow.ts'
-import { useSaveAlert } from './hooks/useSaveAlert.ts'
-import { useTextController } from './hooks/useTextController.ts'
+import type { MemoPageMode } from '@/constants.ts'
+import { MEMO_DRAFT_KEY } from '@/constants.ts'
+import { usePageFlow } from '@/hooks/usePageFlow.ts'
+import { useSaveAlert } from '@/hooks/useSaveAlert.ts'
+import { useTextController } from '@/hooks/useTextController.ts'
 
-const NEW_MEMO_DRAFT_KEY = 'new-memo-draft-v1'
+import { ConfirmDialog } from '../../components/ConfirmDialog.tsx'
+import { MemoHeader } from '../../components/MemoHeader.tsx'
+import { SaveAlert } from '../../components/SaveAlert.tsx'
+import { TextEditor } from '../../components/TextEditor.tsx'
+import { TitleInput } from '../../components/TitleInput.tsx'
 
-export const NewMemoPage = () => {
+interface Props {
+  mode: MemoPageMode
+}
+
+export const MemoPage: FC<Props> = ({ mode }) => {
   const [hasChanges, setHasChanges] = useState(false)
   const { showAlert, show: showSaveAlert, hide: hideSaveAlert } = useSaveAlert()
   const { title, setTitle, text, setText, insertAtCursor, textareaRef } = useTextController({
-    draftKey: NEW_MEMO_DRAFT_KEY,
+    mode,
+    draftKey: MEMO_DRAFT_KEY,
   })
 
   const { saving, showConfirm, setShowConfirm, handleBack, saveNote, discardAndLeave } =
@@ -23,7 +29,7 @@ export const NewMemoPage = () => {
       text,
       title,
       hasChanges,
-      draftKey: NEW_MEMO_DRAFT_KEY,
+      draftKey: MEMO_DRAFT_KEY,
       onSave: () => setHasChanges(false),
       onDiscard: () => setHasChanges(false),
       onValidationError: showSaveAlert,
@@ -62,11 +68,13 @@ export const NewMemoPage = () => {
 
   return (
     <div className="flex min-h-screen flex-col bg-[#FFFBEA] text-slate-900">
-      <NewMemoHeader
+      <MemoHeader
         onBack={handleBack}
         onSave={handleSave}
         saving={saving}
         canSave={text.trim().length > 0 || title.trim().length > 0}
+        mode={mode}
+        title={title}
       />
 
       <div className="mx-auto w-full max-w-3xl px-4 pt-4">
