@@ -1,3 +1,4 @@
+import type { Memo } from '@/db/types.ts'
 import { deriveTitle } from '@/helpers/deriveTitle.ts'
 
 import { memosDB } from './db.ts'
@@ -23,5 +24,23 @@ export async function createMemo(text: string, title?: string): Promise<number> 
   } catch (error) {
     console.error('Error creating memo:', error)
     throw new Error('Failed to create memo')
+  }
+}
+
+export async function deleteMemo(id: number): Promise<void> {
+  try {
+    await memosDB.memos.delete(id)
+  } catch (error) {
+    console.error('Error deleting memo:', error)
+    throw new Error('Failed to delete memo')
+  }
+}
+
+export async function listMemoSummaries(): Promise<Memo[]> {
+  try {
+    return memosDB.memos.orderBy('updatedAt').reverse().toArray()
+  } catch (error) {
+    console.error('Error listing memos:', error)
+    return []
   }
 }

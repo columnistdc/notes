@@ -6,7 +6,7 @@ import { countMemos } from '@/db/dbApi.ts'
 
 import { LandingIntro } from './components/LandingIntro.tsx'
 
-export default function StartPage() {
+export const StartPage = () => {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
 
