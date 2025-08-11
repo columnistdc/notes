@@ -3,29 +3,35 @@ import { useNavigate } from 'react-router-dom'
 
 import { countMemos, createMemo } from '@/db/dbApi.ts'
 
-export type PageFlowOptions = {
+export interface PageFlowOptions {
   text: string
   title: string
-  dirty: boolean
+  hasChanges: boolean
   draftKey: string
   onSave?: () => void
   onDiscard?: () => void
+  onValidationError?: () => void
 }
 
-export type PageFlow = {
+export interface PageFlow {
   saving: boolean
-  showConfirm: null | 'back' | 'leave'
-  setShowConfirm: (value: null | 'back' | 'leave') => void
+  showConfirm: boolean
+  setShowConfirm: (value: boolean) => void
   handleBack: () => Promise<void> | void
   saveNote: () => Promise<void> | void
   discardAndLeave: () => Promise<void> | void
 }
 
-export default function usePageFlow(options: PageFlowOptions): PageFlow {
-  const { text, title, dirty, draftKey, onSave, onDiscard } = options
+export function usePageFlow(options: PageFlowOptions): PageFlow {
+  const { text, title, hasChanges, draftKey, onSave, onDiscard, onValidationError } = options
   const navigate = useNavigate()
   const [saving, setSaving] = useState(false)
-  const [showConfirm, setShowConfirm] = useState<null | 'back' | 'leave'>(null)
+  const [showConfirm, setShowConfirm] = useState(false)
+
+  const clearDraft = useCallback(() => {
+    localStorage.removeItem(draftKey)
+    localStorage.removeItem(`${draftKey}-title`)
+  }, [draftKey])
 
   const navigateToMemos = useCallback(async () => {
     const total = await countMemos()
@@ -34,33 +40,38 @@ export default function usePageFlow(options: PageFlowOptions): PageFlow {
 
   const handleBack = useCallback(async () => {
     const trimmedText = text.trim()
-    if (dirty && trimmedText) {
-      setShowConfirm('back')
+    if (trimmedText && hasChanges) {
+      setShowConfirm(true)
       return
     }
     navigateToMemos()
-  }, [text, dirty, navigateToMemos])
+  }, [text, hasChanges, navigateToMemos])
 
   const saveNote = useCallback(async () => {
     const trimmedText = text.trim()
-    if (!trimmedText) return
+    const trimmedTitle = title.trim()
+
+    if (!trimmedText && !trimmedTitle) {
+      onValidationError?.()
+      return
+    }
+
     setSaving(true)
     try {
-      await createMemo(trimmedText, title)
-      localStorage.removeItem(draftKey)
-      localStorage.removeItem(`${draftKey}-title`)
+      await createMemo(trimmedText, trimmedTitle)
       onSave?.()
     } finally {
       setSaving(false)
+      setShowConfirm(false)
+      clearDraft()
     }
-  }, [text, title, draftKey, onSave])
+  }, [clearDraft, text, title, onSave, onValidationError])
 
   const discardAndLeave = useCallback(async () => {
-    localStorage.removeItem(draftKey)
-    localStorage.removeItem(`${draftKey}-title`)
+    clearDraft()
     onDiscard?.()
     navigateToMemos()
-  }, [draftKey, onDiscard, navigateToMemos])
+  }, [clearDraft, onDiscard, navigateToMemos])
 
   return { saving, showConfirm, setShowConfirm, handleBack, saveNote, discardAndLeave }
 }
