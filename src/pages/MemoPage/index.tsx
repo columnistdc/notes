@@ -68,7 +68,7 @@ export const MemoPage: FC<Props> = ({ mode }) => {
   )
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#FFFBEA] text-slate-900">
+    <div className="flex min-h-screen flex-col bg-[#FFFBEA] text-slate-900" id="main-content">
       <MemoHeader
         onBack={handleBack}
         onSave={handleSave}

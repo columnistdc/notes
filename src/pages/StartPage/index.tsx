@@ -22,7 +22,7 @@ export const StartPage = () => {
   }, [navigate])
 
   return (
-    <section className="hero-landscape grid min-h-screen grid-cols-1 gap-y-8 sm:gap-y-12 md:grid-cols-2 md:gap-0 lg:grid-cols-3">
+    <section className="hero-landscape grid min-h-screen grid-cols-1 gap-y-8 sm:gap-y-12 md:grid-cols-2 md:gap-0 lg:grid-cols-3" id="main-content">
       <div className="relative lg:col-span-2">
         <div
           className="absolute inset-0 bg-cover bg-center"

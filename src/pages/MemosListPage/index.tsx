@@ -26,7 +26,7 @@ export const MemoListPage = () => {
   const handleNewClick = () => navigate('/new')
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#FFFBEA] text-slate-900">
+    <div className="flex min-h-screen flex-col bg-[#FFFBEA] text-slate-900" id="main-content">
       <header className="sticky top-0 z-40 border-b border-black/5 bg-white/70 backdrop-blur">
         <div className="mx-auto flex max-w-3xl items-center gap-3 px-4 py-3">
           <h1 className="text-lg font-semibold">All Memos</h1>
