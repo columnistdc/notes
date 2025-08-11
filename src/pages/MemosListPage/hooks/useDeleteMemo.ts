@@ -28,7 +28,7 @@ export function useDeleteMemo(options: UseDeleteMemoOptions = {}): DeleteMemoHoo
 
   const handleDeleteSelectedMemo = useCallback(async () => {
     if (!selectedMemo.current) {
-      console.error('No memo selected for deletion')
+      console.error('Cannot delete memo: No memo ID selected')
       return
     }
 
