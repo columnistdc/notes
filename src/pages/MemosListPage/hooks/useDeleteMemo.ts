@@ -38,7 +38,7 @@ export function useDeleteMemo(options: UseDeleteMemoOptions = {}): DeleteMemoHoo
       setIsDeleteConfirmShown(false)
       selectedMemo.current = null
     } catch (error) {
-      console.error('Failed to delete memo:', error)
+      console.error(`Failed to delete memo ID ${selectedMemo.current}:`, error)
     }
   }, [onDelete])
 
