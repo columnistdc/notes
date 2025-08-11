@@ -14,14 +14,14 @@ describe('formatTimestamp', () => {
   })
 
   describe('when now = 2025-03-10 15:45 (local time)', () => {
-    const NOW = new Date(2025, 2, 10, 15, 45, 0, 0) // месяц 0-based: 2 => March
+    const NOW = new Date(2025, 2, 10, 15, 45, 0, 0)
 
     beforeEach(() => {
       vi.setSystemTime(NOW)
     })
 
     it('returns time (HH:MM AM/PM) for a timestamp from the same day', () => {
-      const ts = new Date(2025, 2, 10, 9, 30).getTime() // 09:30 same day
+      const ts = new Date(2025, 2, 10, 9, 30).getTime()
       const out = formatTimestamp(ts)
       expect(out).toMatch(TIME_EN_US)
     })
@@ -39,13 +39,13 @@ describe('formatTimestamp', () => {
     })
 
     it('returns date for a different month in the same year', () => {
-      const ts = new Date(2025, 11, 25, 8, 0, 0).getTime() // Dec 25, 2025
+      const ts = new Date(2025, 11, 25, 8, 0, 0).getTime()
       const out = formatTimestamp(ts)
       expect(out).toBe('Dec 25, 2025')
     })
 
     it('returns date for a different year', () => {
-      const ts = new Date(2024, 11, 31, 23, 59, 0).getTime() // Dec 31, 2024
+      const ts = new Date(2024, 11, 31, 23, 59, 0).getTime()
       const out = formatTimestamp(ts)
       expect(out).toBe('Dec 31, 2024')
     })
