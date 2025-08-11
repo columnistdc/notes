@@ -13,8 +13,14 @@ export default defineConfig({
         test: {
           name: 'unit',
           environment: 'node',
-          include: ['**/*.test.{ts,tsx}'],
-          exclude: ['**/*.dom.test.{ts,tsx}', '**/*.component.test.{ts,tsx}'],
+          include: ['src/**/*.test.{ts,tsx}'],
+          exclude: [
+            '**/node_modules/**',
+            '**/dist/**',
+            '**/coverage/**',
+            'src/**/*.dom.test.{ts,tsx}',
+            'src/**/*.component.test.{ts,tsx}',
+          ],
           setupFiles: ['./vitest.setup.node.ts'],
           globals: true,
         },
@@ -23,7 +29,8 @@ export default defineConfig({
         test: {
           name: 'dom',
           environment: 'jsdom',
-          include: ['**/*.dom.test.{ts,tsx}', '**/*.component.test.{ts,tsx}'],
+          include: ['src/**/*.dom.test.{ts,tsx}', 'src/**/*.component.test.{ts,tsx}'],
+          exclude: ['**/node_modules/**', '**/dist/**', '**/coverage/**'],
           setupFiles: ['./vitest.setup.dom.ts'],
           globals: true,
         },
