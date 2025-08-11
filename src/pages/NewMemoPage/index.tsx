@@ -25,6 +25,7 @@ export const NewMemoPage = () => {
       hasChanges,
       draftKey: NEW_MEMO_DRAFT_KEY,
       onSave: () => setHasChanges(false),
+      onDiscard: () => setHasChanges(false),
       onValidationError: showSaveAlert,
     })
 

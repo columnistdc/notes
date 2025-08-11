@@ -9,6 +9,7 @@ export interface PageFlowOptions {
   hasChanges: boolean
   draftKey: string
   onSave?: () => void
+  onDiscard?: () => void
   onValidationError?: () => void
 }
 
@@ -22,7 +23,7 @@ export interface PageFlow {
 }
 
 export function usePageFlow(options: PageFlowOptions): PageFlow {
-  const { text, title, hasChanges, draftKey, onSave, onValidationError } = options
+  const { text, title, hasChanges, draftKey, onSave, onDiscard, onValidationError } = options
   const navigate = useNavigate()
   const [saving, setSaving] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
@@ -68,9 +69,9 @@ export function usePageFlow(options: PageFlowOptions): PageFlow {
 
   const discardAndLeave = useCallback(async () => {
     clearDraft()
-    onSave?.()
+    onDiscard?.()
     navigateToMemos()
-  }, [clearDraft, onSave, navigateToMemos])
+  }, [clearDraft, onDiscard, navigateToMemos])
 
   return { saving, showConfirm, setShowConfirm, handleBack, saveNote, discardAndLeave }
 }
