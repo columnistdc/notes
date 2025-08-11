@@ -1,4 +1,8 @@
 export function deriveTitle(text: string, max = 80): string {
+  if (max <= 0) {
+    return ''
+  }
+
   const firstLine =
     (text || '')
       .split(/\r?\n/)
