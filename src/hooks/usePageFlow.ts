@@ -1,9 +1,10 @@
 import { useCallback, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
-import { countMemos, createMemo } from '@/db/dbApi.ts'
+import { MemoPageMode } from '@/constants.ts'
+import { countMemos, createMemo, updateMemoById } from '@/db/dbApi.ts'
 
-export interface PageFlowOptions {
+interface PageFlowOptions {
   text: string
   title: string
   hasChanges: boolean
@@ -11,9 +12,10 @@ export interface PageFlowOptions {
   onSave?: () => void
   onDiscard?: () => void
   onValidationError?: () => void
+  mode: MemoPageMode
 }
 
-export interface PageFlow {
+interface PageFlow {
   saving: boolean
   showConfirm: boolean
   setShowConfirm: (value: boolean) => void
@@ -23,10 +25,11 @@ export interface PageFlow {
 }
 
 export function usePageFlow(options: PageFlowOptions): PageFlow {
-  const { text, title, hasChanges, draftKey, onSave, onDiscard, onValidationError } = options
+  const { text, title, hasChanges, draftKey, onSave, onDiscard, onValidationError, mode } = options
   const navigate = useNavigate()
   const [saving, setSaving] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
+  const { id } = useParams<{ id: string }>()
 
   const clearDraft = useCallback(() => {
     localStorage.removeItem(draftKey)
@@ -40,12 +43,13 @@ export function usePageFlow(options: PageFlowOptions): PageFlow {
 
   const handleBack = useCallback(async () => {
     const trimmedText = text.trim()
-    if (trimmedText && hasChanges) {
+    const trimmedTitle = title.trim()
+    if ((trimmedText || trimmedTitle) && hasChanges) {
       setShowConfirm(true)
       return
     }
     navigateToMemos()
-  }, [text, hasChanges, navigateToMemos])
+  }, [text, title, hasChanges, navigateToMemos])
 
   const saveNote = useCallback(async () => {
     const trimmedText = text.trim()
@@ -58,14 +62,26 @@ export function usePageFlow(options: PageFlowOptions): PageFlow {
 
     setSaving(true)
     try {
-      await createMemo(trimmedText, trimmedTitle)
+      if (mode === MemoPageMode.Edit) {
+        const memoId = Number(id)
+        if (!id || isNaN(memoId)) {
+          console.error('Invalid memo ID:', id)
+          return
+        }
+        await updateMemoById(memoId, {
+          text: trimmedText,
+          title: trimmedTitle,
+        })
+      } else {
+        await createMemo(trimmedText, trimmedTitle)
+      }
       onSave?.()
     } finally {
       setSaving(false)
       setShowConfirm(false)
       clearDraft()
     }
-  }, [clearDraft, text, title, onSave, onValidationError])
+  }, [text, title, onValidationError, mode, onSave, id, clearDraft])
 
   const discardAndLeave = useCallback(async () => {
     clearDraft()

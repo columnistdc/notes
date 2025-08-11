@@ -36,6 +36,31 @@ export async function deleteMemo(id: number): Promise<void> {
   }
 }
 
+export async function getMemoById(id: number): Promise<Memo | undefined> {
+  try {
+    return await memosDB.memos.get(id)
+  } catch (error) {
+    console.error('Error getting memo by id:', error)
+    return undefined
+  }
+}
+
+export async function updateMemoById(
+  id: number,
+  updates: Partial<Pick<Memo, 'text' | 'title'>>,
+): Promise<void> {
+  try {
+    const now = Date.now()
+    await memosDB.memos.update(id, {
+      ...updates,
+      updatedAt: now,
+    })
+  } catch (error) {
+    console.error('Error updating memo by id:', error)
+    throw new Error('Failed to update memo')
+  }
+}
+
 export async function listMemoSummaries(): Promise<Memo[]> {
   try {
     return memosDB.memos.orderBy('updatedAt').reverse().toArray()

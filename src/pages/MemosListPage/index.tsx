@@ -1,13 +1,13 @@
 import { useNavigate } from 'react-router-dom'
 
 import Button from '@/components/Button'
+import { useDeleteMemo } from '@/hooks/useDeleteMemo.ts'
+import { useMemosData } from '@/hooks/useMemosData.ts'
 
 import { DeleteConfirmDialog } from './components/DeleteConfirmDialog.tsx'
 import { EmptyState } from './components/EmptyState.tsx'
 import { ListLoading } from './components/ListLoading.tsx'
 import { MemoRow } from './components/MemoRow.tsx'
-import { useDeleteMemo } from './hooks/useDeleteMemo.ts'
-import { useMemosData } from './hooks/useMemosData.ts'
 
 export const MemoListPage = () => {
   const navigate = useNavigate()
