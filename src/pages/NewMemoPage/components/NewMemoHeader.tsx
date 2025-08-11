@@ -7,7 +7,7 @@ type NewMemoHeaderProps = {
   canSave: boolean
 }
 
-export default function NewMemoHeader({ onBack, onSave, saving, canSave }: NewMemoHeaderProps) {
+export const NewMemoHeader = ({ onBack, onSave, saving, canSave }: NewMemoHeaderProps) => {
   return (
     <header className="sticky top-0 z-40 border-b border-black/5 bg-white/70 backdrop-blur">
       <div className="mx-auto flex max-w-3xl items-center gap-3 px-4 py-3">

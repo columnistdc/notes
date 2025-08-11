@@ -7,7 +7,7 @@ type ConfirmDialogProps = {
   onSave: () => void
 }
 
-export default function ConfirmDialog({ show, onCancel, onDiscard, onSave }: ConfirmDialogProps) {
+export const ConfirmDialog = ({ show, onCancel, onDiscard, onSave }: ConfirmDialogProps) => {
   if (!show) return null
 
   return (

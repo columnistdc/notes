@@ -3,7 +3,7 @@ type TitleInputProps = {
   onChange: (value: string) => void
 }
 
-export default function TitleInput({ title, onChange }: TitleInputProps) {
+export const TitleInput = ({ title, onChange }: TitleInputProps) => {
   return (
     <div className="mb-4">
       <label htmlFor="memo-title" className="mb-2 block text-sm font-medium text-slate-700">
