@@ -1,0 +1,6 @@
+{
+  "hooks": {
+    "pre-commit": "node .husky/pre-commit.js",
+    "pre-push": "node .husky/pre-push.js"
+  }
+}

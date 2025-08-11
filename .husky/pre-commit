@@ -1,5 +1,0 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
-# Форматируем только staged файлы
-npx lint-staged

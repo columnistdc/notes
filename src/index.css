@@ -2,21 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer components {
-  .container-page {
-    @apply max-w-[920px] mx-auto px-6;
+@media (orientation: landscape) and (max-width: 767px) {
+  .hero-landscape {
+    grid-template-columns: 1fr !important;
   }
-  .card {
-    @apply bg-white rounded-xl p-4 shadow-card;
-  }
-  .btn {
-    @apply inline-flex items-center justify-center px-4 py-2 rounded-lg bg-white transition;
-    border: 2px solid rgba(255, 165, 0, 0.5);
-  }
-  .btn:hover {
-    @apply -translate-y-[1px] shadow;
-  }
-  .btn:disabled {
-    @apply opacity-60 cursor-not-allowed;
+  .hero-landscape > div:first-child {
+    min-height: 100vh;
   }
 }
