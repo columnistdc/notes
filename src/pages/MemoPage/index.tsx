@@ -1,7 +1,7 @@
 import { type FC, useCallback, useState } from 'react'
 
 import type { MemoPageMode } from '@/constants.ts'
-import { MEMO_DRAFT_KEY } from '@/constants.ts'
+import { TAB_DRAFT_KEY } from '@/constants.ts'
 import { usePageFlow } from '@/hooks/usePageFlow.ts'
 import { useSaveAlert } from '@/hooks/useSaveAlert.ts'
 import { useTextController } from '@/hooks/useTextController.ts'
@@ -22,7 +22,7 @@ export const MemoPage: FC<Props> = ({ mode }) => {
   const [saveError, setSaveError] = useState(false)
   const { title, setTitle, text, setText, insertAtCursor, textareaRef } = useTextController({
     mode,
-    draftKey: MEMO_DRAFT_KEY,
+    draftKey: TAB_DRAFT_KEY,
   })
 
   const { saving, showConfirm, setShowConfirm, handleBack, saveNote, discardAndLeave } =
@@ -31,7 +31,7 @@ export const MemoPage: FC<Props> = ({ mode }) => {
       title,
       mode,
       hasChanges,
-      draftKey: MEMO_DRAFT_KEY,
+      draftKey: TAB_DRAFT_KEY,
       onSave: () => setHasChanges(false),
       onDiscard: () => setHasChanges(false),
       onValidationError: showSaveAlert,
