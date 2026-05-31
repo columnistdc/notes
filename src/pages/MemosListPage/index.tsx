@@ -11,7 +11,7 @@ import { MemoRow } from './components/MemoRow.tsx'
 
 export const MemoListPage = () => {
   const navigate = useNavigate()
-  const { items, refetchItems } = useMemosData()
+  const { items, loadError, refetchItems } = useMemosData()
   const { isDeleteConfirmShown, toggleDeleteConfirmShown, selectMemo, handleDeleteSelectedMemo } =
     useDeleteMemo({
       onDelete: refetchItems,
@@ -39,7 +39,14 @@ export const MemoListPage = () => {
       </header>
 
       <main className="relative mx-auto w-full max-w-3xl flex-1 px-4 py-4">
-        {items === null ? (
+        {loadError ? (
+          <div
+            role="alert"
+            className="rounded-2xl border border-red-200 bg-red-50 p-6 text-center text-red-700 shadow-sm"
+          >
+            Failed to load memos. Please reload the page.
+          </div>
+        ) : items === null ? (
           <div className="rounded-2xl border border-black/5 bg-white/80 shadow-sm">
             <ListLoading />
           </div>

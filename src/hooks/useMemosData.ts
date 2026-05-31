@@ -5,15 +5,22 @@ import type { Memo } from '@/db/types.ts'
 
 interface MemosData {
   items: Memo[] | null
+  loadError: boolean
   refetchItems: () => Promise<void>
 }
 
 export function useMemosData(): MemosData {
   const [items, setItems] = useState<Memo[] | null>(null)
+  const [loadError, setLoadError] = useState(false)
 
   const refetchItems = useCallback(async () => {
-    const memos = await listMemoSummaries()
-    setItems(memos)
+    try {
+      const memos = await listMemoSummaries()
+      setItems(memos)
+      setLoadError(false)
+    } catch {
+      setLoadError(true)
+    }
   }, [])
 
   useEffect(() => {
@@ -25,6 +32,7 @@ export function useMemosData(): MemosData {
 
   return {
     items,
+    loadError,
     refetchItems,
   }
 }
