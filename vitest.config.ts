@@ -16,6 +16,7 @@ export default defineConfig({
         'src/**/*.component.test.{ts,tsx}',
         'src/vite-env.d.ts',
         'src/globals.d.ts',
+        'src/test-matchers.d.ts',
       ],
       thresholds: {
         lines: 3,
