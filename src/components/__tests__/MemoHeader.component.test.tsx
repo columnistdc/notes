@@ -12,6 +12,7 @@ const defaults = {
   onSave: vi.fn(),
   saving: false,
   canSave: true,
+  saved: false,
   mode: MemoPageMode.Create,
 }
 
@@ -65,6 +66,32 @@ describe('MemoHeader', () => {
   it('Back button has type=button (not submit)', () => {
     render(<MemoHeader {...defaults} />)
     expect(screen.getByRole('button', { name: /back/i })).toHaveAttribute('type', 'button')
+  })
+
+  it('shows a "Saved" indicator on the Save button when saved=true', () => {
+    render(<MemoHeader {...defaults} saved canSave={false} />)
+    // sr-only "Saved" text accompanies the green checkmark
+    expect(screen.getByRole('button', { name: /saved/i })).toBeInTheDocument()
+  })
+
+  it('does not show the "Saved" indicator when saved=false', () => {
+    render(<MemoHeader {...defaults} saved={false} />)
+    expect(screen.queryByText('Saved')).not.toBeInTheDocument()
+  })
+
+  it('Save is disabled but still shows the saved indicator after a save', () => {
+    // After a successful save there are no changes, so Save is disabled,
+    // yet the green tick remains visible.
+    render(<MemoHeader {...defaults} saved canSave={false} />)
+    const saveButton = screen.getByRole('button', { name: /save/i })
+    expect(saveButton).toBeDisabled()
+    expect(saveButton).toHaveTextContent(/saved/i)
+  })
+
+  it('does not show the saved indicator while saving', () => {
+    render(<MemoHeader {...defaults} saving saved />)
+    expect(screen.getByRole('button', { name: /saving/i })).toBeInTheDocument()
+    expect(screen.queryByText('Saved')).not.toBeInTheDocument()
   })
 
   it('has no axe violations', async () => {

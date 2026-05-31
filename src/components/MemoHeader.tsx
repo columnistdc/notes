@@ -6,11 +6,20 @@ type MemoHeaderProps = {
   onSave: () => void
   saving: boolean
   canSave: boolean
+  saved: boolean
   mode: MemoPageMode
   title?: string
 }
 
-export const MemoHeader = ({ onBack, onSave, saving, canSave, mode, title }: MemoHeaderProps) => {
+export const MemoHeader = ({
+  onBack,
+  onSave,
+  saving,
+  canSave,
+  saved,
+  mode,
+  title,
+}: MemoHeaderProps) => {
   return (
     <header className="sticky top-0 z-40 border-b border-black/5 bg-white/70 backdrop-blur">
       <div className="mx-auto flex max-w-3xl items-center gap-3 px-4 py-3">
@@ -27,7 +36,28 @@ export const MemoHeader = ({ onBack, onSave, saving, canSave, mode, title }: Mem
         </h1>
         <div className="ml-auto">
           <Button onClick={onSave} disabled={!canSave || saving} className="px-4 py-1.5">
-            {saving ? 'Saving…' : 'Save'}
+            {saving ? (
+              'Saving…'
+            ) : (
+              <span className="inline-flex items-center gap-1.5">
+                {saved && (
+                  <svg
+                    viewBox="0 0 24 24"
+                    className="h-4 w-4 text-green-600"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M20 6 9 17l-5-5" />
+                  </svg>
+                )}
+                <span>Save</span>
+                {saved && <span className="sr-only">Saved</span>}
+              </span>
+            )}
           </Button>
         </div>
       </div>

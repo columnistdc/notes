@@ -13,11 +13,10 @@ export const RouteAnnouncer = () => {
 
   useEffect(() => {
     if (!ref.current) return
-    const label =
-      PAGE_LABELS[pathname] ?? (pathname.startsWith('/edit/') ? 'Edit Memo' : 'Page changed')
     // Direct DOM mutation keeps announcement out of React render cycle
     // while still triggering the aria-live region for screen readers.
-    ref.current.textContent = label
+    ref.current.textContent =
+      PAGE_LABELS[pathname] ?? (pathname.startsWith('/edit/') ? 'Edit Memo' : 'Page changed')
   }, [pathname])
 
   return <span ref={ref} aria-live="polite" aria-atomic="true" className="sr-only" />

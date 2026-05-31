@@ -20,6 +20,7 @@ interface Props {
 export const MemoPage: FC<Props> = ({ mode }) => {
   const { id: memoId } = useParams<{ id: string }>()
   const [hasChanges, setHasChanges] = useState(false)
+  const [saved, setSaved] = useState(false)
   const { showAlert, show: showSaveAlert, hide: hideSaveAlert } = useSaveAlert()
   const [saveError, setSaveError] = useState(false)
   const [conflictError, setConflictError] = useState(false)
@@ -36,48 +37,56 @@ export const MemoPage: FC<Props> = ({ mode }) => {
       draftKey: TAB_DRAFT_KEY,
       memoId,
       expectedUpdatedAt: loadedUpdatedAt,
-      onSave: () => { setHasChanges(false); },
+      onSave: () => {
+        setHasChanges(false)
+        setSaved(true)
+      },
       onDiscard: () => { setHasChanges(false); },
       onValidationError: showSaveAlert,
       onSaveError: () => { setSaveError(true); },
       onConflict: () => { setConflictError(true); },
     })
 
-  const onDictation = useCallback(
-    (result: string) => {
-      if (!result) return
-      insertAtCursor(result + ' ')
-    },
-    [insertAtCursor],
-  )
-
-  const clearAlerts = useCallback(() => {
+  // Common reaction to any edit: mark unsaved changes, clear the saved tick
+  // and any stale alerts.
+  const markChanged = useCallback(() => {
+    setHasChanges(true)
+    setSaved(false)
     hideSaveAlert()
     setSaveError(false)
     setConflictError(false)
   }, [hideSaveAlert])
 
+  const onDictation = useCallback(
+    (result: string) => {
+      if (!result) return
+      insertAtCursor(result + ' ')
+      markChanged()
+    },
+    [insertAtCursor, markChanged],
+  )
+
   const handleSave = useCallback(() => {
-    clearAlerts()
+    hideSaveAlert()
+    setSaveError(false)
+    setConflictError(false)
     void saveNote()
-  }, [saveNote, clearAlerts])
+  }, [saveNote, hideSaveAlert])
 
   const handleChangeText = useCallback(
     (value: string) => {
       setText(value)
-      setHasChanges(true)
-      clearAlerts()
+      markChanged()
     },
-    [setText, clearAlerts],
+    [setText, markChanged],
   )
 
   const handleSetTitle = useCallback(
     (value: string) => {
       setTitle(value)
-      setHasChanges(true)
-      clearAlerts()
+      markChanged()
     },
-    [setTitle, clearAlerts],
+    [setTitle, markChanged],
   )
 
   return (
@@ -88,7 +97,8 @@ export const MemoPage: FC<Props> = ({ mode }) => {
         }}
         onSave={handleSave}
         saving={saving}
-        canSave={text.trim().length > 0 || title.trim().length > 0}
+        canSave={hasChanges && (text.trim().length > 0 || title.trim().length > 0)}
+        saved={saved}
         mode={mode}
         title={title}
       />

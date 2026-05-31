@@ -62,7 +62,7 @@ export const DialogShell = ({ labelId, onClose, children }: DialogShellProps) =>
 
   return (
     <div
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 p-4"
+      className="fixed inset-0 z-60 flex items-center justify-center bg-black/40 p-4"
       aria-modal="true"
       role="dialog"
       aria-labelledby={labelId}
