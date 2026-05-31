@@ -1,8 +1,9 @@
 import { lazy, Suspense } from 'react'
-import { createBrowserRouter } from 'react-router-dom'
+import { createBrowserRouter, Outlet } from 'react-router-dom'
 
 import { ErrorBoundary } from '@/components/ErrorBoundary.tsx'
 import { LoadingSpinner } from '@/components/LoadingSpinner.tsx'
+import { RouteAnnouncer } from '@/components/RouteAnnouncer.tsx'
 import { MemoPageMode } from '@/constants.ts'
 
 const StartPage = lazy(() =>
@@ -15,45 +16,57 @@ const MemoPage = lazy(() =>
   import('@/pages/MemoPage').then((module) => ({ default: module.MemoPage })),
 )
 
+const RootLayout = () => (
+  <>
+    <RouteAnnouncer />
+    <Outlet />
+  </>
+)
+
 export const router = createBrowserRouter([
   {
-    path: '/',
-    element: (
-      <ErrorBoundary>
-        <Suspense fallback={<LoadingSpinner fullScreen />}>
-          <StartPage />
-        </Suspense>
-      </ErrorBoundary>
-    ),
-  },
-  {
-    path: '/memos',
-    element: (
-      <ErrorBoundary>
-        <Suspense fallback={<LoadingSpinner fullScreen />}>
-          <MemoListPage />
-        </Suspense>
-      </ErrorBoundary>
-    ),
-  },
-  {
-    path: '/new',
-    element: (
-      <ErrorBoundary>
-        <Suspense fallback={<LoadingSpinner fullScreen />}>
-          <MemoPage mode={MemoPageMode.Create} />
-        </Suspense>
-      </ErrorBoundary>
-    ),
-  },
-  {
-    path: '/edit/:id',
-    element: (
-      <ErrorBoundary>
-        <Suspense fallback={<LoadingSpinner fullScreen />}>
-          <MemoPage mode={MemoPageMode.Edit} />
-        </Suspense>
-      </ErrorBoundary>
-    ),
+    element: <RootLayout />,
+    children: [
+      {
+        path: '/',
+        element: (
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingSpinner fullScreen />}>
+              <StartPage />
+            </Suspense>
+          </ErrorBoundary>
+        ),
+      },
+      {
+        path: '/memos',
+        element: (
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingSpinner fullScreen />}>
+              <MemoListPage />
+            </Suspense>
+          </ErrorBoundary>
+        ),
+      },
+      {
+        path: '/new',
+        element: (
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingSpinner fullScreen />}>
+              <MemoPage mode={MemoPageMode.Create} />
+            </Suspense>
+          </ErrorBoundary>
+        ),
+      },
+      {
+        path: '/edit/:id',
+        element: (
+          <ErrorBoundary>
+            <Suspense fallback={<LoadingSpinner fullScreen />}>
+              <MemoPage mode={MemoPageMode.Edit} />
+            </Suspense>
+          </ErrorBoundary>
+        ),
+      },
+    ],
   },
 ])
