@@ -9,19 +9,18 @@ type Props = {
 }
 
 export default function FabMic({ onResult, disabled = false, className }: Props) {
-  const { isSupported, listening, error, transcript, start, stop, resetTranscript } =
+  const { isSupported, listening, error, start, stop, resetTranscript } =
     useSpeechRecognition({ onResult })
 
   const handleClick = useCallback(() => {
     if (!isSupported || disabled) return
     if (listening) {
-      onResult(transcript)
       stop()
     } else {
       resetTranscript()
       start()
     }
-  }, [isSupported, disabled, listening, stop, onResult, transcript, resetTranscript, start])
+  }, [isSupported, disabled, listening, stop, resetTranscript, start])
 
   const btnBase =
     'fixed right-6 bottom-6 z-50 rounded-full w-14 h-14 md:w-16 md:h-16 flex items-center justify-center transition shadow-xl'
