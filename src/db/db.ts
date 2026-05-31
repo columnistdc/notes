@@ -3,7 +3,7 @@ import Dexie, { type Table } from 'dexie'
 import type { Memo } from './types.ts'
 
 class MemosDB extends Dexie {
-  memos!: Table<Memo, number>
+  declare memos: Table<Memo, number>
 
   constructor() {
     super('voice-memos')

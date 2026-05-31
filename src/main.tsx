@@ -10,7 +10,10 @@ import './index.css'
 void (async () => {
   const dbAvailable = await checkDbAvailable()
 
-  createRoot(document.getElementById('root')!).render(
+  const rootElement = document.getElementById('root')
+  if (!rootElement) throw new Error('Root element #root not found in DOM')
+
+  createRoot(rootElement).render(
     <StrictMode>
       {dbAvailable ? (
         <RouterProvider router={router} />
