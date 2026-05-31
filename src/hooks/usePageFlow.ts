@@ -1,18 +1,20 @@
-import { useCallback, useState } from 'react'
+import { type MutableRefObject, useCallback, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import { MemoPageMode } from '@/constants.ts'
-import { countMemos, createMemo, updateMemoById } from '@/db/dbApi.ts'
+import { countMemos, createMemo, MemoConflictError, updateMemoById } from '@/db/dbApi.ts'
 
 interface PageFlowOptions {
   text: string
   title: string
   hasChanges: boolean
   draftKey: string
+  expectedUpdatedAt?: MutableRefObject<number | undefined>
   onSave?: () => void
   onDiscard?: () => void
   onValidationError?: () => void
   onSaveError?: () => void
+  onConflict?: () => void
   mode: MemoPageMode
 }
 
@@ -26,7 +28,7 @@ interface PageFlow {
 }
 
 export function usePageFlow(options: PageFlowOptions): PageFlow {
-  const { text, title, hasChanges, draftKey, onSave, onDiscard, onValidationError, onSaveError, mode } = options
+  const { text, title, hasChanges, draftKey, expectedUpdatedAt, onSave, onDiscard, onValidationError, onSaveError, onConflict, mode } = options
   const navigate = useNavigate()
   const [saving, setSaving] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
@@ -73,22 +75,27 @@ export function usePageFlow(options: PageFlowOptions): PageFlow {
           console.error('Invalid memo ID:', id)
           return
         }
-        await updateMemoById(memoId, {
-          text: trimmedText,
-          title: trimmedTitle,
-        })
+        await updateMemoById(
+          memoId,
+          { text: trimmedText, title: trimmedTitle },
+          expectedUpdatedAt?.current,
+        )
       } else {
         await createMemo(trimmedText, trimmedTitle)
       }
       clearDraft()
       setShowConfirm(false)
       onSave?.()
-    } catch {
-      onSaveError?.()
+    } catch (err) {
+      if (err instanceof MemoConflictError) {
+        onConflict?.()
+      } else {
+        onSaveError?.()
+      }
     } finally {
       setSaving(false)
     }
-  }, [text, title, onValidationError, onSaveError, mode, onSave, id, clearDraft])
+  }, [text, title, onValidationError, onSaveError, onConflict, expectedUpdatedAt, mode, onSave, id, clearDraft])
 
   const discardAndLeave = useCallback(async () => {
     clearDraft()

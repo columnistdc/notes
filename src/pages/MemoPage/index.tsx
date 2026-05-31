@@ -20,10 +20,10 @@ export const MemoPage: FC<Props> = ({ mode }) => {
   const [hasChanges, setHasChanges] = useState(false)
   const { showAlert, show: showSaveAlert, hide: hideSaveAlert } = useSaveAlert()
   const [saveError, setSaveError] = useState(false)
-  const { title, setTitle, text, setText, insertAtCursor, textareaRef } = useTextController({
-    mode,
-    draftKey: TAB_DRAFT_KEY,
-  })
+  const [conflictError, setConflictError] = useState(false)
+
+  const { title, setTitle, text, setText, insertAtCursor, textareaRef, loadedUpdatedAt } =
+    useTextController({ mode, draftKey: TAB_DRAFT_KEY })
 
   const { saving, showConfirm, setShowConfirm, handleBack, saveNote, discardAndLeave } =
     usePageFlow({
@@ -32,10 +32,12 @@ export const MemoPage: FC<Props> = ({ mode }) => {
       mode,
       hasChanges,
       draftKey: TAB_DRAFT_KEY,
+      expectedUpdatedAt: loadedUpdatedAt,
       onSave: () => setHasChanges(false),
       onDiscard: () => setHasChanges(false),
       onValidationError: showSaveAlert,
       onSaveError: () => setSaveError(true),
+      onConflict: () => setConflictError(true),
     })
 
   const onDictation = useCallback(
@@ -46,30 +48,33 @@ export const MemoPage: FC<Props> = ({ mode }) => {
     [insertAtCursor],
   )
 
-  const handleSave = useCallback(() => {
+  const clearAlerts = useCallback(() => {
     hideSaveAlert()
     setSaveError(false)
+    setConflictError(false)
+  }, [hideSaveAlert])
+
+  const handleSave = useCallback(() => {
+    clearAlerts()
     void saveNote()
-  }, [saveNote, hideSaveAlert])
+  }, [saveNote, clearAlerts])
 
   const handleChangeText = useCallback(
     (value: string) => {
       setText(value)
       setHasChanges(true)
-      hideSaveAlert()
-      setSaveError(false)
+      clearAlerts()
     },
-    [setText, hideSaveAlert],
+    [setText, clearAlerts],
   )
 
   const handleSetTitle = useCallback(
     (value: string) => {
       setTitle(value)
       setHasChanges(true)
-      hideSaveAlert()
-      setSaveError(false)
+      clearAlerts()
     },
-    [setTitle, hideSaveAlert],
+    [setTitle, clearAlerts],
   )
 
   return (
@@ -91,6 +96,11 @@ export const MemoPage: FC<Props> = ({ mode }) => {
 
       <SaveAlert show={showAlert} />
       <SaveAlert show={saveError} message="Failed to save memo. Please try again." variant="error" />
+      <SaveAlert
+        show={conflictError}
+        message="This memo was modified in another tab. Reload the page to get the latest version before saving."
+        variant="error"
+      />
 
       <TextEditor
         text={text}

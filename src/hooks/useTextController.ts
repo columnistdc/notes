@@ -1,4 +1,4 @@
-import { type RefObject, useCallback, useEffect, useRef, useState } from 'react'
+import { type MutableRefObject, type RefObject, useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import { MemoPageMode } from '@/constants.ts'
@@ -16,6 +16,7 @@ interface TextController {
   setText: (value: string) => void
   insertAtCursor: (snippet: string) => void
   textareaRef: RefObject<HTMLTextAreaElement | null>
+  loadedUpdatedAt: MutableRefObject<number | undefined>
 }
 
 export function useTextController(options: TextControllerOptions): TextController {
@@ -34,6 +35,7 @@ export function useTextController(options: TextControllerOptions): TextControlle
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
   const initialText = useRef(initialDraft)
   const initialTitle = useRef(initialDraftTitle)
+  const loadedUpdatedAt = useRef<number | undefined>(undefined)
 
   useEffect(() => {
     if (mode !== MemoPageMode.Edit) return
@@ -53,6 +55,7 @@ export function useTextController(options: TextControllerOptions): TextControlle
       setTitle(memo.title)
       initialText.current = memo.text
       initialTitle.current = memo.title
+      loadedUpdatedAt.current = memo.updatedAt
     })
   }, [draftKey, id, mode, navigate])
 
@@ -108,5 +111,6 @@ export function useTextController(options: TextControllerOptions): TextControlle
     setText,
     insertAtCursor,
     textareaRef,
+    loadedUpdatedAt,
   }
 }
