@@ -32,7 +32,10 @@ export function useSpeechRecognition(options: SpeechRecognitionHookOptions): Spe
     grammars,
   } = options
 
-  const [isSupported, setIsSupported] = useState(false)
+  const [isSupported] = useState(
+    () =>
+      typeof SpeechRecognition !== 'undefined' || typeof webkitSpeechRecognition !== 'undefined',
+  )
   const [listening, setListening] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [transcript, setTranscript] = useState('')
@@ -48,10 +51,8 @@ export function useSpeechRecognition(options: SpeechRecognitionHookOptions): Spe
       } else if (typeof webkitSpeechRecognition !== 'undefined') {
         recognition = new webkitSpeechRecognition()
       } else {
-        setIsSupported(false)
         return
       }
-      setIsSupported(true)
     } catch (e) {
       console.error('SpeechRecognition initialization failed:', e)
     }

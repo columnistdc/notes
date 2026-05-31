@@ -20,39 +20,35 @@ interface TextController {
 
 export function useTextController(options: TextControllerOptions): TextController {
   const { draftKey, mode } = options
-  const [title, setTitle] = useState('')
-  const [text, setText] = useState('')
-  const textareaRef = useRef<HTMLTextAreaElement | null>(null)
-  const initialText = useRef('')
-  const initialTitle = useRef('')
   const { id } = useParams<{ id: string }>()
 
-  useEffect(() => {
-    if (mode === MemoPageMode.Edit) {
-      const memoId = Number(id)
-      if (!id || isNaN(memoId)) {
-        console.error('Invalid memo ID:', id)
-        return
-      }
-      void getMemoById(Number(memoId)).then((memo) => {
-        if (memo) {
-          const memoText = memo.text || ''
-          const memoTitle = memo.title || ''
-          setText(memoText)
-          setTitle(memoTitle)
-          initialText.current = memoText
-          initialTitle.current = memoTitle
-        }
-      })
-    } else {
-      const draft = localStorage.getItem(draftKey) || ''
-      const titleDraft = localStorage.getItem(`${draftKey}-title`) || ''
+  // For create mode, read localStorage synchronously during initialization so
+  // we avoid setting state inside the effect (which causes cascading renders).
+  const initialDraft = mode === MemoPageMode.Create ? (localStorage.getItem(draftKey) ?? '') : ''
+  const initialDraftTitle =
+    mode === MemoPageMode.Create ? (localStorage.getItem(`${draftKey}-title`) ?? '') : ''
 
-      setText(draft)
-      setTitle(titleDraft)
-      initialText.current = draft
-      initialTitle.current = titleDraft
+  const [text, setText] = useState(initialDraft)
+  const [title, setTitle] = useState(initialDraftTitle)
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null)
+  const initialText = useRef(initialDraft)
+  const initialTitle = useRef(initialDraftTitle)
+
+  useEffect(() => {
+    if (mode !== MemoPageMode.Edit) return
+    const memoId = Number(id)
+    if (!id || isNaN(memoId)) {
+      console.error('Invalid memo ID:', id)
+      return
     }
+    void getMemoById(memoId).then((memo) => {
+      if (memo) {
+        setText(memo.text)
+        setTitle(memo.title)
+        initialText.current = memo.text
+        initialTitle.current = memo.title
+      }
+    })
   }, [draftKey, id, mode])
 
   useEffect(() => {

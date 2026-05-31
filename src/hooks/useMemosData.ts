@@ -17,6 +17,9 @@ export function useMemosData(): MemosData {
   }, [])
 
   useEffect(() => {
+    // setState is called asynchronously inside refetchItems (after await),
+    // not synchronously in the effect body — rule fires a false positive here.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void refetchItems()
   }, [refetchItems])
 
