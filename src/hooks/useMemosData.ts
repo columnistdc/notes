@@ -30,6 +30,18 @@ export function useMemosData(): MemosData {
     void refetchItems()
   }, [refetchItems])
 
+  // Refetch when the tab becomes visible so changes made in another tab
+  // (create, edit, delete) are reflected without requiring a manual reload.
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        void refetchItems()
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+  }, [refetchItems])
+
   return {
     items,
     loadError,
