@@ -12,6 +12,7 @@ interface PageFlowOptions {
   onSave?: () => void
   onDiscard?: () => void
   onValidationError?: () => void
+  onSaveError?: () => void
   mode: MemoPageMode
 }
 
@@ -25,7 +26,7 @@ interface PageFlow {
 }
 
 export function usePageFlow(options: PageFlowOptions): PageFlow {
-  const { text, title, hasChanges, draftKey, onSave, onDiscard, onValidationError, mode } = options
+  const { text, title, hasChanges, draftKey, onSave, onDiscard, onValidationError, onSaveError, mode } = options
   const navigate = useNavigate()
   const [saving, setSaving] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
@@ -75,13 +76,15 @@ export function usePageFlow(options: PageFlowOptions): PageFlow {
       } else {
         await createMemo(trimmedText, trimmedTitle)
       }
+      clearDraft()
+      setShowConfirm(false)
       onSave?.()
+    } catch {
+      onSaveError?.()
     } finally {
       setSaving(false)
-      setShowConfirm(false)
-      clearDraft()
     }
-  }, [text, title, onValidationError, mode, onSave, id, clearDraft])
+  }, [text, title, onValidationError, onSaveError, mode, onSave, id, clearDraft])
 
   const discardAndLeave = useCallback(async () => {
     clearDraft()

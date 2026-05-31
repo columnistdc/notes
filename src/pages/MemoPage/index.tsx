@@ -19,6 +19,7 @@ interface Props {
 export const MemoPage: FC<Props> = ({ mode }) => {
   const [hasChanges, setHasChanges] = useState(false)
   const { showAlert, show: showSaveAlert, hide: hideSaveAlert } = useSaveAlert()
+  const [saveError, setSaveError] = useState(false)
   const { title, setTitle, text, setText, insertAtCursor, textareaRef } = useTextController({
     mode,
     draftKey: MEMO_DRAFT_KEY,
@@ -34,6 +35,7 @@ export const MemoPage: FC<Props> = ({ mode }) => {
       onSave: () => setHasChanges(false),
       onDiscard: () => setHasChanges(false),
       onValidationError: showSaveAlert,
+      onSaveError: () => setSaveError(true),
     })
 
   const onDictation = useCallback(
@@ -46,6 +48,7 @@ export const MemoPage: FC<Props> = ({ mode }) => {
 
   const handleSave = useCallback(() => {
     hideSaveAlert()
+    setSaveError(false)
     void saveNote()
   }, [saveNote, hideSaveAlert])
 
@@ -54,6 +57,7 @@ export const MemoPage: FC<Props> = ({ mode }) => {
       setText(value)
       setHasChanges(true)
       hideSaveAlert()
+      setSaveError(false)
     },
     [setText, hideSaveAlert],
   )
@@ -63,6 +67,7 @@ export const MemoPage: FC<Props> = ({ mode }) => {
       setTitle(value)
       setHasChanges(true)
       hideSaveAlert()
+      setSaveError(false)
     },
     [setTitle, hideSaveAlert],
   )
@@ -70,7 +75,9 @@ export const MemoPage: FC<Props> = ({ mode }) => {
   return (
     <div className="flex min-h-screen flex-col bg-[#FFFBEA] text-slate-900" id="main-content">
       <MemoHeader
-        onBack={() => { void handleBack() }}
+        onBack={() => {
+          void handleBack()
+        }}
         onSave={handleSave}
         saving={saving}
         canSave={text.trim().length > 0 || title.trim().length > 0}
@@ -83,6 +90,7 @@ export const MemoPage: FC<Props> = ({ mode }) => {
       </div>
 
       <SaveAlert show={showAlert} />
+      <SaveAlert show={saveError} message="Failed to save memo. Please try again." variant="error" />
 
       <TextEditor
         text={text}
@@ -94,7 +102,9 @@ export const MemoPage: FC<Props> = ({ mode }) => {
       <ConfirmDialog
         show={showConfirm}
         onCancel={() => setShowConfirm(false)}
-        onDiscard={() => { void discardAndLeave() }}
+        onDiscard={() => {
+          void discardAndLeave()
+        }}
         onSave={handleSave}
       />
     </div>
