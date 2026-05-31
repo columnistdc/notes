@@ -1,12 +1,9 @@
 import * as path from 'node:path'
 import { defineConfig } from 'vitest/config'
 
+const alias = { '@': path.resolve(__dirname, 'src') }
+
 export default defineConfig({
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, 'src'),
-    },
-  },
   test: {
     coverage: {
       provider: 'v8',
@@ -26,8 +23,9 @@ export default defineConfig({
       },
     },
     projects: [
-      // ─── Level 1: Unit — pure functions, node env ───────────────────────────
+      // ─── Level 1: Unit — pure functions, node env ─────────────────────────
       {
+        resolve: { alias },
         test: {
           name: 'unit',
           environment: 'node',
@@ -44,8 +42,9 @@ export default defineConfig({
           globals: true,
         },
       },
-      // ─── Level 2: Hook — renderHook + real Dexie via fake-indexeddb ─────────
+      // ─── Level 2: Hook — renderHook + real Dexie via fake-indexeddb ───────
       {
+        resolve: { alias },
         test: {
           name: 'hook',
           environment: 'jsdom',
@@ -55,8 +54,9 @@ export default defineConfig({
           globals: true,
         },
       },
-      // ─── Level 2: Component — RTL + jsdom + jest-axe ────────────────────────
+      // ─── Level 2: Component — RTL + jsdom + jest-axe ──────────────────────
       {
+        resolve: { alias },
         test: {
           name: 'dom',
           environment: 'jsdom',
