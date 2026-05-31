@@ -1,8 +1,8 @@
-import { type FC, useCallback, useState } from 'react'
+import { type FC, useCallback, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import type { MemoPageMode } from '@/constants.ts'
-import { TAB_DRAFT_KEY } from '@/constants.ts'
+import { SAVED_INDICATOR_MS, TAB_DRAFT_KEY } from '@/constants.ts'
 import { usePageFlow } from '@/hooks/usePageFlow.ts'
 import { useSaveAlert } from '@/hooks/useSaveAlert.ts'
 import { useTextController } from '@/hooks/useTextController.ts'
@@ -46,6 +46,12 @@ export const MemoPage: FC<Props> = ({ mode }) => {
       onSaveError: () => { setSaveError(true); },
       onConflict: () => { setConflictError(true); },
     })
+
+  useEffect(() => {
+    if (!saved || saving) return
+    const timer = setTimeout(() => { setSaved(false); }, SAVED_INDICATOR_MS)
+    return () => { clearTimeout(timer); }
+  }, [saved, saving])
 
   const markChanged = useCallback(() => {
     setHasChanges(true)

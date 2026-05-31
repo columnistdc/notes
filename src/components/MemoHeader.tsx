@@ -54,8 +54,7 @@ export const MemoHeader = ({
                     <path d="M20 6 9 17l-5-5" />
                   </svg>
                 )}
-                <span>Save</span>
-                {saved && <span className="sr-only">Saved</span>}
+                <span>{saved ? 'Saved' : 'Save'}</span>
               </span>
             )}
           </Button>

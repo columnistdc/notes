@@ -1,5 +1,7 @@
 export const MEMO_DRAFT_KEY = 'memo-draft-v1'
 
+export const SAVED_INDICATOR_MS = 1000
+
 export enum MemoPageMode {
   Edit = 'edit',
   Create = 'create',

@@ -94,4 +94,28 @@ describe('MemoPage — Save button state (create mode)', () => {
     expect(screen.queryByText('Saved')).not.toBeInTheDocument()
     expect(getSaveButton()).toBeEnabled()
   })
+
+  it('reverts the Saved label back to Save after the indicator delay', async () => {
+    renderCreatePage()
+    await userEvent.type(screen.getByLabelText('Title'), 'My memo')
+    await userEvent.click(getSaveButton())
+
+    await waitFor(
+      () => {
+        expect(screen.getByText('Saved')).toBeInTheDocument()
+      },
+      { timeout: 2500 },
+    )
+
+    await waitFor(
+      () => {
+        expect(screen.queryByText('Saved')).not.toBeInTheDocument()
+      },
+      { timeout: 2500 },
+    )
+
+    const saveButton = getSaveButton()
+    expect(saveButton).toHaveTextContent('Save')
+    expect(saveButton).toBeDisabled()
+  })
 })
