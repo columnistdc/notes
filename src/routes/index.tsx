@@ -69,4 +69,8 @@ export const router = createBrowserRouter([
       },
     ],
   },
-])
+], {
+  // Vite serves the app under `base` ('/notes/'); the router operates beneath
+  // it. BASE_URL always starts with '/', so URLs like /notes/ resolve to '/'.
+  basename: import.meta.env.BASE_URL,
+})
