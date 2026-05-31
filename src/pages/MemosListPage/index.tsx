@@ -23,7 +23,7 @@ export const MemoListPage = () => {
     toggleDeleteConfirmShown()
   }
 
-  const handleNewClick = () => navigate('/new')
+  const handleNewClick = () => { void navigate('/new') }
 
   return (
     <div className="flex min-h-screen flex-col bg-[#FFFBEA] text-slate-900" id="main-content">
@@ -59,7 +59,7 @@ export const MemoListPage = () => {
       <DeleteConfirmDialog
         show={isDeleteConfirmShown}
         onCancel={toggleDeleteConfirmShown}
-        onConfirm={handleDeleteSelectedMemo}
+        onConfirm={() => { void handleDeleteSelectedMemo() }}
       />
     </div>
   )

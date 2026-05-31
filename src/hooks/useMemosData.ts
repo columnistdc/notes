@@ -12,12 +12,12 @@ export function useMemosData(): MemosData {
   const [items, setItems] = useState<Memo[] | null>(null)
 
   const refetchItems = useCallback(async () => {
-    const data = await listMemoSummaries()
-    setItems(data)
+    const memos = await listMemoSummaries()
+    setItems(memos)
   }, [])
 
   useEffect(() => {
-    refetchItems()
+    void refetchItems()
   }, [refetchItems])
 
   return {

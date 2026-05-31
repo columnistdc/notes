@@ -34,7 +34,7 @@ export function useTextController(options: TextControllerOptions): TextControlle
         console.error('Invalid memo ID:', id)
         return
       }
-      getMemoById(Number(memoId)).then((memo) => {
+      void getMemoById(Number(memoId)).then((memo) => {
         if (memo) {
           const memoText = memo.text || ''
           const memoTitle = memo.title || ''

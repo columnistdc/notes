@@ -14,8 +14,8 @@ export const StartPage = () => {
     setLoading(true)
     try {
       const total = await countMemos()
-      if (total === 0) navigate('/new')
-      else navigate('/memos')
+      if (total === 0) void navigate('/new')
+      else void navigate('/memos')
     } finally {
       setLoading(false)
     }
@@ -33,11 +33,11 @@ export const StartPage = () => {
       </div>
 
       <div className="relative z-10 hidden items-center justify-center p-6 md:flex lg:p-10">
-        <LandingIntro className={'md:text-left'} onStart={handleStart} loading={loading} />
+        <LandingIntro className={'md:text-left'} onStart={() => { void handleStart() }} loading={loading} />
       </div>
 
       <div className="px-6 pb-10 md:hidden">
-        <LandingIntro className={'mx-auto'} onStart={handleStart} loading={loading} />
+        <LandingIntro className={'mx-auto'} onStart={() => { void handleStart() }} loading={loading} />
       </div>
     </section>
   )

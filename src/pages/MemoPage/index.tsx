@@ -46,7 +46,7 @@ export const MemoPage: FC<Props> = ({ mode }) => {
 
   const handleSave = useCallback(() => {
     hideSaveAlert()
-    saveNote()
+    void saveNote()
   }, [saveNote, hideSaveAlert])
 
   const handleChangeText = useCallback(
@@ -70,7 +70,7 @@ export const MemoPage: FC<Props> = ({ mode }) => {
   return (
     <div className="flex min-h-screen flex-col bg-[#FFFBEA] text-slate-900" id="main-content">
       <MemoHeader
-        onBack={handleBack}
+        onBack={() => { void handleBack() }}
         onSave={handleSave}
         saving={saving}
         canSave={text.trim().length > 0 || title.trim().length > 0}
@@ -94,7 +94,7 @@ export const MemoPage: FC<Props> = ({ mode }) => {
       <ConfirmDialog
         show={showConfirm}
         onCancel={() => setShowConfirm(false)}
-        onDiscard={discardAndLeave}
+        onDiscard={() => { void discardAndLeave() }}
         onSave={handleSave}
       />
     </div>

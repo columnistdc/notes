@@ -38,7 +38,7 @@ export function usePageFlow(options: PageFlowOptions): PageFlow {
 
   const navigateToMemos = useCallback(async () => {
     const total = await countMemos()
-    navigate(total === 0 ? '/' : '/memos', { replace: true })
+    void navigate(total === 0 ? '/' : '/memos', { replace: true })
   }, [navigate])
 
   const handleBack = useCallback(async () => {
@@ -48,7 +48,7 @@ export function usePageFlow(options: PageFlowOptions): PageFlow {
       setShowConfirm(true)
       return
     }
-    navigateToMemos()
+    await navigateToMemos()
   }, [text, title, hasChanges, navigateToMemos])
 
   const saveNote = useCallback(async () => {
@@ -86,7 +86,7 @@ export function usePageFlow(options: PageFlowOptions): PageFlow {
   const discardAndLeave = useCallback(async () => {
     clearDraft()
     onDiscard?.()
-    navigateToMemos()
+    await navigateToMemos()
   }, [clearDraft, onDiscard, navigateToMemos])
 
   return { saving, showConfirm, setShowConfirm, handleBack, saveNote, discardAndLeave }
