@@ -1,5 +1,5 @@
 import { type MutableRefObject, type RefObject, useCallback, useEffect, useRef, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import { MemoPageMode } from '@/constants.ts'
 import { getMemoById } from '@/db/dbApi.ts'
@@ -7,6 +7,7 @@ import { getMemoById } from '@/db/dbApi.ts'
 interface TextControllerOptions {
   draftKey: string
   mode: MemoPageMode
+  memoId?: string
 }
 
 interface TextController {
@@ -20,8 +21,7 @@ interface TextController {
 }
 
 export function useTextController(options: TextControllerOptions): TextController {
-  const { draftKey, mode } = options
-  const { id } = useParams<{ id: string }>()
+  const { draftKey, mode, memoId: id } = options
   const navigate = useNavigate()
 
   // For create mode, read localStorage synchronously during initialization so

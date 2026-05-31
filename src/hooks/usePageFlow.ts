@@ -1,5 +1,5 @@
 import { type MutableRefObject, useCallback, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import { MemoPageMode } from '@/constants.ts'
 import { countMemos, createMemo, MemoConflictError, updateMemoById } from '@/db/dbApi.ts'
@@ -9,6 +9,7 @@ interface PageFlowOptions {
   title: string
   hasChanges: boolean
   draftKey: string
+  memoId?: string
   expectedUpdatedAt?: MutableRefObject<number | undefined>
   onSave?: () => void
   onDiscard?: () => void
@@ -28,11 +29,10 @@ interface PageFlow {
 }
 
 export function usePageFlow(options: PageFlowOptions): PageFlow {
-  const { text, title, hasChanges, draftKey, expectedUpdatedAt, onSave, onDiscard, onValidationError, onSaveError, onConflict, mode } = options
+  const { text, title, hasChanges, draftKey, memoId: id, expectedUpdatedAt, onSave, onDiscard, onValidationError, onSaveError, onConflict, mode } = options
   const navigate = useNavigate()
   const [saving, setSaving] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
-  const { id } = useParams<{ id: string }>()
 
   const clearDraft = useCallback(() => {
     localStorage.removeItem(draftKey)

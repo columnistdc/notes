@@ -1,4 +1,5 @@
 import { type FC, useCallback, useState } from 'react'
+import { useParams } from 'react-router-dom'
 
 import type { MemoPageMode } from '@/constants.ts'
 import { TAB_DRAFT_KEY } from '@/constants.ts'
@@ -17,13 +18,14 @@ interface Props {
 }
 
 export const MemoPage: FC<Props> = ({ mode }) => {
+  const { id: memoId } = useParams<{ id: string }>()
   const [hasChanges, setHasChanges] = useState(false)
   const { showAlert, show: showSaveAlert, hide: hideSaveAlert } = useSaveAlert()
   const [saveError, setSaveError] = useState(false)
   const [conflictError, setConflictError] = useState(false)
 
   const { title, setTitle, text, setText, insertAtCursor, textareaRef, loadedUpdatedAt } =
-    useTextController({ mode, draftKey: TAB_DRAFT_KEY })
+    useTextController({ mode, draftKey: TAB_DRAFT_KEY, memoId })
 
   const { saving, showConfirm, setShowConfirm, handleBack, saveNote, discardAndLeave } =
     usePageFlow({
@@ -32,6 +34,7 @@ export const MemoPage: FC<Props> = ({ mode }) => {
       mode,
       hasChanges,
       draftKey: TAB_DRAFT_KEY,
+      memoId,
       expectedUpdatedAt: loadedUpdatedAt,
       onSave: () => setHasChanges(false),
       onDiscard: () => setHasChanges(false),
