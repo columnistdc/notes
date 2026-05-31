@@ -38,6 +38,7 @@ export const MemoRow = ({ item, onDelete }: MemoRowProps) => {
             <div className="flex shrink-0 items-center gap-2 self-center pl-3">
               <div className="text-right text-sm text-slate-500">{right}</div>
               <button
+                type="button"
                 onClick={handleDeleteClick}
                 aria-label={`Delete memo "${item.title || 'Untitled'}"`}
                 className="flex h-8 w-8 items-center justify-center rounded-full text-slate-400 transition hover:bg-red-50 hover:text-red-600 focus:bg-red-50 focus:text-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
