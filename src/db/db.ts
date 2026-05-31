@@ -9,9 +9,17 @@ class MemosDB extends Dexie {
     super('voice-memos')
     this.version(1).stores({
       memos: '++id, updatedAt, createdAt, title',
-      memos_audio: '++id, memoId, createdAt',
     })
   }
 }
 
 export const memosDB = new MemosDB()
+
+export async function checkDbAvailable(): Promise<boolean> {
+  try {
+    await memosDB.open()
+    return true
+  } catch {
+    return false
+  }
+}
