@@ -28,9 +28,17 @@ export function useSpeechRecognition(options: SpeechRecognitionHookOptions): Spe
   const {
     lang = typeof navigator !== 'undefined' ? navigator.language : 'en-US',
     continuous = false,
+    interimResults = false,
     maxAlternatives = 1,
     grammars,
   } = options
+
+  // Keep onResult in a ref so the effect doesn't re-run (and tear down the
+  // recognition instance) every time the parent re-renders with a new callback.
+  const onResultRef = useRef(options.onResult)
+  useEffect(() => {
+    onResultRef.current = options.onResult
+  })
 
   const [isSupported] = useState(
     () =>
@@ -60,6 +68,7 @@ export function useSpeechRecognition(options: SpeechRecognitionHookOptions): Spe
     if (recognition) {
       recognition.lang = lang
       recognition.continuous = continuous
+      recognition.interimResults = interimResults
       recognition.maxAlternatives = maxAlternatives
 
       if (grammars?.length) {
@@ -107,7 +116,7 @@ export function useSpeechRecognition(options: SpeechRecognitionHookOptions): Spe
 
         if (finalTranscript) {
           setTranscript((prev) => `${prev} ${finalTranscript}`.trim())
-          options.onResult(finalTranscript)
+          onResultRef.current(finalTranscript)
         }
       }
 
@@ -118,7 +127,7 @@ export function useSpeechRecognition(options: SpeechRecognitionHookOptions): Spe
       recognitionRef.current?.stop()
       recognitionRef.current = null
     }
-  }, [lang, continuous, maxAlternatives, grammars, options])
+  }, [lang, continuous, interimResults, maxAlternatives, grammars])
 
   const start = useCallback(() => {
     if (!recognitionRef.current) return

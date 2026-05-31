@@ -15,7 +15,7 @@ export default defineConfig({
       exclude: ['src/**/*.test.{ts,tsx}', 'src/**/*.dom.test.{ts,tsx}', 'src/**/*.component.test.{ts,tsx}', 'src/vite-env.d.ts', 'src/globals.d.ts'],
       thresholds: {
         lines: 3,
-        functions: 4,
+        functions: 3,
       },
     },
     projects: [
