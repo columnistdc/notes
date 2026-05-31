@@ -19,8 +19,10 @@ export default defineConfig({
         'src/test-matchers.d.ts',
       ],
       thresholds: {
-        lines: 3,
-        functions: 3,
+        lines: 50,
+        functions: 45,
+        branches: 55,
+        statements: 50,
       },
     },
     projects: [
