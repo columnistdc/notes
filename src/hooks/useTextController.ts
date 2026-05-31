@@ -1,5 +1,5 @@
 import { type RefObject, useCallback, useEffect, useRef, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 import { MemoPageMode } from '@/constants.ts'
 import { getMemoById } from '@/db/dbApi.ts'
@@ -21,6 +21,7 @@ interface TextController {
 export function useTextController(options: TextControllerOptions): TextController {
   const { draftKey, mode } = options
   const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
 
   // For create mode, read localStorage synchronously during initialization so
   // we avoid setting state inside the effect (which causes cascading renders).
@@ -36,20 +37,24 @@ export function useTextController(options: TextControllerOptions): TextControlle
 
   useEffect(() => {
     if (mode !== MemoPageMode.Edit) return
+
     const memoId = Number(id)
     if (!id || isNaN(memoId)) {
-      console.error('Invalid memo ID:', id)
+      void navigate('/memos', { replace: true })
       return
     }
+
     void getMemoById(memoId).then((memo) => {
-      if (memo) {
-        setText(memo.text)
-        setTitle(memo.title)
-        initialText.current = memo.text
-        initialTitle.current = memo.title
+      if (!memo) {
+        void navigate('/memos', { replace: true })
+        return
       }
+      setText(memo.text)
+      setTitle(memo.title)
+      initialText.current = memo.text
+      initialTitle.current = memo.title
     })
-  }, [draftKey, id, mode])
+  }, [draftKey, id, mode, navigate])
 
   useEffect(() => {
     if (mode === MemoPageMode.Edit) {
