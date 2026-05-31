@@ -5,7 +5,7 @@ import { memosDB } from './db.ts'
 
 export async function countMemos(): Promise<number> {
   try {
-    return memosDB.memos.count()
+    return await memosDB.memos.count()
   } catch (error) {
     console.error('Error counting memos:', error)
     return 0
@@ -15,7 +15,7 @@ export async function countMemos(): Promise<number> {
 export async function createMemo(text: string, title?: string): Promise<number> {
   const now = Date.now()
   try {
-    return memosDB.memos.add({
+    return await memosDB.memos.add({
       text,
       createdAt: now,
       updatedAt: now,
@@ -77,7 +77,7 @@ export async function updateMemoById(
 
 export async function listMemoSummaries(): Promise<Memo[]> {
   try {
-    return memosDB.memos.orderBy('updatedAt').reverse().toArray()
+    return await memosDB.memos.orderBy('updatedAt').reverse().toArray()
   } catch (error) {
     console.error('Error listing memos:', error)
     return []

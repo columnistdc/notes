@@ -22,10 +22,10 @@ describe('useDeleteMemo', () => {
   it('toggleDeleteConfirmShown shows and hides the dialog', () => {
     const { result } = renderHook(() => useDeleteMemo())
 
-    act(() => result.current.toggleDeleteConfirmShown())
+    act(() => { result.current.toggleDeleteConfirmShown(); })
     expect(result.current.isDeleteConfirmShown).toBe(true)
 
-    act(() => result.current.toggleDeleteConfirmShown())
+    act(() => { result.current.toggleDeleteConfirmShown(); })
     expect(result.current.isDeleteConfirmShown).toBe(false)
   })
 
@@ -33,7 +33,7 @@ describe('useDeleteMemo', () => {
     const id = await createMemo('To delete')
     const { result } = renderHook(() => useDeleteMemo())
 
-    act(() => result.current.selectMemo(id))
+    act(() => { result.current.selectMemo(id); })
 
     await act(async () => {
       await result.current.handleDeleteSelectedMemo()
@@ -64,7 +64,7 @@ describe('useDeleteMemo', () => {
     const onDelete = vi.fn().mockResolvedValue(undefined)
     const { result } = renderHook(() => useDeleteMemo({ onDelete }))
 
-    act(() => result.current.selectMemo(id))
+    act(() => { result.current.selectMemo(id); })
 
     await act(async () => {
       await result.current.handleDeleteSelectedMemo()
@@ -89,7 +89,7 @@ describe('useDeleteMemo', () => {
     const onDelete = vi.fn().mockResolvedValue(undefined)
     const { result } = renderHook(() => useDeleteMemo({ onDelete }))
 
-    act(() => result.current.selectMemo(id))
+    act(() => { result.current.selectMemo(id); })
 
     const spy = vi.spyOn(memosDB.memos, 'delete').mockRejectedValueOnce(new Error('DB error'))
 
@@ -117,7 +117,7 @@ describe('useDeleteMemo', () => {
     })
 
     // Dialog stays open on error so user can retry
-    await waitFor(() => expect(result.current.isDeleteConfirmShown).toBe(true))
+    await waitFor(() => { expect(result.current.isDeleteConfirmShown).toBe(true); })
     spy.mockRestore()
   })
 })

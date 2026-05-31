@@ -13,7 +13,7 @@ export default tseslint.config(
   { ignores: ['dist', 'build', 'coverage', '.vite', '.husky'] },
 
   js.configs.recommended,
-  ...tseslint.configs.recommendedTypeChecked,
+  ...tseslint.configs.strictTypeChecked,
 
   reactHooks.configs.flat['recommended-latest'],
   reactRefresh.configs.vite,
@@ -86,6 +86,9 @@ export default tseslint.config(
     rules: {
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
+      // tseslint.config() helper carries a @deprecated tag pointing to ESLint's
+      // defineConfig, but remains the documented typescript-eslint entry point.
+      '@typescript-eslint/no-deprecated': 'off',
     },
   },
 

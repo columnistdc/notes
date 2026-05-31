@@ -10,8 +10,12 @@ type MemoRowProps = {
 }
 
 export const MemoRow = ({ item, onDelete }: MemoRowProps) => {
+  // A persisted memo always has an id; guard defensively so the rest of the
+  // component can treat it as a definite number (no edit/delete without one).
+  if (item.id === undefined) return null
+
   const timestamp = formatTimestamp(item.createdAt)
-  const to = `/edit/${item.id}`
+  const to = `/edit/${String(item.id)}`
   const label = item.title || 'Untitled'
 
   return (

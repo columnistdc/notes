@@ -1,4 +1,4 @@
-import { type MutableRefObject, useCallback, useState } from 'react'
+import { type RefObject, useCallback, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { MemoPageMode } from '@/constants.ts'
@@ -10,7 +10,7 @@ interface PageFlowOptions {
   hasChanges: boolean
   draftKey: string
   memoId?: string
-  expectedUpdatedAt?: MutableRefObject<number | undefined>
+  expectedUpdatedAt?: RefObject<number | undefined>
   onSave?: () => void
   onDiscard?: () => void
   onValidationError?: () => void

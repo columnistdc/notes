@@ -16,7 +16,7 @@ export const TextEditor = ({ text, onChange, onDictation, textareaRef }: TextEdi
         <textarea
           ref={textareaRef}
           value={text}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(e) => { onChange(e.target.value); }}
           className="min-h-[50vh] w-full resize-y bg-transparent p-4 text-[17px] leading-7 outline-none focus:ring-2 focus:ring-orange-300 focus:ring-offset-2 md:p-6"
           placeholder="Start typing your memo…"
           aria-describedby="editor-help"

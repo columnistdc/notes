@@ -1,4 +1,4 @@
-import { type MutableRefObject, type RefObject, useCallback, useEffect, useRef, useState } from 'react'
+import { type RefObject, useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { MemoPageMode } from '@/constants.ts'
@@ -17,7 +17,7 @@ interface TextController {
   setText: (value: string) => void
   insertAtCursor: (snippet: string) => void
   textareaRef: RefObject<HTMLTextAreaElement | null>
-  loadedUpdatedAt: MutableRefObject<number | undefined>
+  loadedUpdatedAt: RefObject<number | undefined>
 }
 
 export function useTextController(options: TextControllerOptions): TextController {
@@ -72,7 +72,7 @@ export function useTextController(options: TextControllerOptions): TextControlle
       }
     }, 300)
 
-    return () => clearTimeout(timeoutId)
+    return () => { clearTimeout(timeoutId); }
   }, [text, title, draftKey, mode])
 
   useEffect(() => {
@@ -87,14 +87,14 @@ export function useTextController(options: TextControllerOptions): TextControlle
       }
     }
     window.addEventListener('beforeunload', handler)
-    return () => window.removeEventListener('beforeunload', handler)
+    return () => { window.removeEventListener('beforeunload', handler); }
   }, [text, title, draftKey, mode])
 
   const insertAtCursor = useCallback((snippet: string) => {
     const el = textareaRef.current
     if (!el) return
-    const start = el.selectionStart ?? el.value.length
-    const end = el.selectionEnd ?? el.value.length
+    const start = el.selectionStart
+    const end = el.selectionEnd
     const newValue = el.value.slice(0, start) + snippet + el.value.slice(end)
     setText(newValue)
     requestAnimationFrame(() => {

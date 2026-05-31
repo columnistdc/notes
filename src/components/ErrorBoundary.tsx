@@ -20,11 +20,11 @@ export class ErrorBoundary extends Component<Props, State> {
     return { hasError: true, error }
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+  override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('Error caught by boundary:', error, errorInfo)
   }
 
-  render() {
+  override render() {
     if (this.state.hasError) {
       if (this.props.fallback) {
         return this.props.fallback
@@ -45,7 +45,7 @@ export class ErrorBoundary extends Component<Props, State> {
             <p className="mb-4 text-slate-600">We're sorry, but something unexpected happened.</p>
             <button
               type="button"
-              onClick={() => window.location.reload()}
+              onClick={() => { window.location.reload(); }}
               className="rounded-lg bg-orange-500 px-4 py-2 text-white hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
             >
               Reload Page

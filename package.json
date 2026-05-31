@@ -10,7 +10,7 @@
     "test": "vitest",
     "test:run": "vitest run --coverage",
     "lint": "eslint . --ext .ts,.tsx,.js,.jsx --max-warnings=0 --cache",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc -b --noEmit",
     "prepare": "husky"
   },
   "lint-staged": {

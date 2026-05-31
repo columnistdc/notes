@@ -213,8 +213,8 @@ describe('listMemoSummaries', () => {
     await new Promise((r) => setTimeout(r, 5))
     const id2 = await createMemo('Second')
     const memos = await listMemoSummaries()
-    expect(memos[0].id).toBe(id2)
-    expect(memos[1].id).toBe(id1)
+    expect(memos[0]?.id).toBe(id2)
+    expect(memos[1]?.id).toBe(id1)
   })
 
   it('re-orders after an edit — updated memo moves to front', async () => {
@@ -224,7 +224,7 @@ describe('listMemoSummaries', () => {
     await new Promise((r) => setTimeout(r, 5))
     await updateMemoById(id1, { text: 'First (edited)' })
     const memos = await listMemoSummaries()
-    expect(memos[0].id).toBe(id1)
-    expect(memos[1].id).toBe(id2)
+    expect(memos[0]?.id).toBe(id1)
+    expect(memos[1]?.id).toBe(id2)
   })
 })

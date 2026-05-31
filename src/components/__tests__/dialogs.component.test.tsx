@@ -69,13 +69,15 @@ describe('ConfirmDialog', () => {
   it('wraps Tab focus from last button back to first (focus trap)', async () => {
     render(<ConfirmDialog {...defaults} />)
     const buttons = screen.getAllByRole('button')
+    const first = buttons[0]
     const last = buttons[buttons.length - 1]
+    if (!first || !last) throw new Error('expected focusable buttons in dialog')
 
     // Put focus on the last button, then Tab — should wrap to first
     last.focus()
     expect(document.activeElement).toBe(last)
     await userEvent.keyboard('{Tab}')
-    expect(document.activeElement).toBe(buttons[0])
+    expect(document.activeElement).toBe(first)
   })
 
   it('has no axe violations', async () => {

@@ -39,7 +39,7 @@ export function useMemosData(): MemosData {
       }
     }
     document.addEventListener('visibilitychange', handleVisibilityChange)
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+    return () => { document.removeEventListener('visibilitychange', handleVisibilityChange); }
   }, [refetchItems])
 
   return {

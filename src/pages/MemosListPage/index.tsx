@@ -57,7 +57,7 @@ export const MemoListPage = () => {
         ) : (
           <ul className="space-y-3">
             {items.map((memo) => (
-              <MemoRow key={memo.id} item={memo} onDelete={() => handleDeleteClick(memo.id)} />
+              <MemoRow key={memo.id} item={memo} onDelete={() => { handleDeleteClick(memo.id); }} />
             ))}
           </ul>
         )}

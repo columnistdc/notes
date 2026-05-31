@@ -72,7 +72,7 @@ describe('create mode — draft auto-save', () => {
       { wrapper },
     )
 
-    act(() => result.current.setText('new content'))
+    act(() => { result.current.setText('new content'); })
 
     await new Promise((r) => setTimeout(r, 350))
 
@@ -85,7 +85,7 @@ describe('create mode — draft auto-save', () => {
       { wrapper },
     )
 
-    act(() => result.current.setTitle('my title'))
+    act(() => { result.current.setTitle('my title'); })
 
     await new Promise((r) => setTimeout(r, 350))
 
@@ -123,7 +123,7 @@ describe('edit mode — memo loading', () => {
       { wrapper },
     )
 
-    await waitFor(() => expect(result.current.text).toBe('DB text'))
+    await waitFor(() => { expect(result.current.text).toBe('DB text'); })
     expect(result.current.title).toBe('DB title')
   })
 
@@ -141,7 +141,7 @@ describe('edit mode — memo loading', () => {
       { wrapper },
     )
 
-    await waitFor(() => expect(result.current.loadedUpdatedAt.current).toBeDefined())
+    await waitFor(() => { expect(result.current.loadedUpdatedAt.current).toBeDefined(); })
     expect(result.current.loadedUpdatedAt.current).toBe(memo?.updatedAt)
   })
 
@@ -158,8 +158,8 @@ describe('edit mode — memo loading', () => {
       { wrapper },
     )
 
-    await waitFor(() => expect(result.current.text).toBe('Text'))
-    act(() => result.current.setText('Modified'))
+    await waitFor(() => { expect(result.current.text).toBe('Text'); })
+    act(() => { result.current.setText('Modified'); })
 
     await new Promise((r) => setTimeout(r, 350))
 
@@ -213,7 +213,7 @@ describe('insertAtCursor', () => {
     )
 
     // textareaRef.current is null — insertAtCursor should be a no-op
-    act(() => result.current.insertAtCursor('hello'))
+    act(() => { result.current.insertAtCursor('hello'); })
 
     expect(result.current.text).toBe('')
   })

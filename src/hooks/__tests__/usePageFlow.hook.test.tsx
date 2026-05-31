@@ -110,7 +110,7 @@ describe('saveNote — create mode', () => {
 
     const memos = await dbApi.listMemoSummaries()
     expect(memos).toHaveLength(1)
-    expect(memos[0].text).toBe('New memo content')
+    expect(memos[0]?.text).toBe('New memo content')
   })
 
   it('removes the draft from localStorage on success', async () => {
@@ -327,7 +327,7 @@ describe('setShowConfirm', () => {
     await act(async () => { await result.current.handleBack() })
     expect(result.current.showConfirm).toBe(true)
 
-    act(() => result.current.setShowConfirm(false))
+    act(() => { result.current.setShowConfirm(false); })
     expect(result.current.showConfirm).toBe(false)
   })
 })

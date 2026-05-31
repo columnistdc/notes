@@ -72,9 +72,14 @@ export function useSpeechRecognition(options: SpeechRecognitionHookOptions): Spe
       recognition.maxAlternatives = maxAlternatives
 
       if (grammars?.length) {
-        const SGLConstructor =
-          (typeof SpeechGrammarList !== 'undefined' && SpeechGrammarList) ||
-          (typeof webkitSpeechGrammarList !== 'undefined' && webkitSpeechGrammarList)
+        // Runtime feature detection via globalThis: the SpeechGrammarList
+        // globals are typed as always-present but are absent in browsers
+        // without grammar support, so we look them up as optional.
+        const globals = globalThis as {
+          SpeechGrammarList?: new () => SpeechGrammarList
+          webkitSpeechGrammarList?: new () => SpeechGrammarList
+        }
+        const SGLConstructor = globals.SpeechGrammarList ?? globals.webkitSpeechGrammarList
 
         if (SGLConstructor) {
           const list = new SGLConstructor()
@@ -108,9 +113,9 @@ export function useSpeechRecognition(options: SpeechRecognitionHookOptions): Spe
 
         for (let i = event.resultIndex; i < event.results.length; i++) {
           const res = event.results[i]
-          const transcriptPart = res[0].transcript
-          if (res.isFinal) {
-            finalTranscript += transcriptPart
+          const alternative = res?.[0]
+          if (res?.isFinal && alternative) {
+            finalTranscript += alternative.transcript
           }
         }
 

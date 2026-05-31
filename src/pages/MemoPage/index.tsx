@@ -36,11 +36,11 @@ export const MemoPage: FC<Props> = ({ mode }) => {
       draftKey: TAB_DRAFT_KEY,
       memoId,
       expectedUpdatedAt: loadedUpdatedAt,
-      onSave: () => setHasChanges(false),
-      onDiscard: () => setHasChanges(false),
+      onSave: () => { setHasChanges(false); },
+      onDiscard: () => { setHasChanges(false); },
       onValidationError: showSaveAlert,
-      onSaveError: () => setSaveError(true),
-      onConflict: () => setConflictError(true),
+      onSaveError: () => { setSaveError(true); },
+      onConflict: () => { setConflictError(true); },
     })
 
   const onDictation = useCallback(
@@ -114,7 +114,7 @@ export const MemoPage: FC<Props> = ({ mode }) => {
 
       <ConfirmDialog
         show={showConfirm}
-        onCancel={() => setShowConfirm(false)}
+        onCancel={() => { setShowConfirm(false); }}
         onDiscard={() => {
           void discardAndLeave()
         }}

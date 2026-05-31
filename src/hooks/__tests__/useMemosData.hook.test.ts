@@ -27,7 +27,7 @@ describe('useMemosData', () => {
 
     const { result } = renderHook(() => useMemosData())
 
-    await waitFor(() => expect(result.current.items).not.toBeNull())
+    await waitFor(() => { expect(result.current.items).not.toBeNull(); })
     expect(result.current.items).toHaveLength(2)
   })
 
@@ -38,8 +38,8 @@ describe('useMemosData', () => {
 
     const { result } = renderHook(() => useMemosData())
 
-    await waitFor(() => expect(result.current.items).toHaveLength(2))
-    expect(result.current.items?.[0].id).not.toBe(id1)
+    await waitFor(() => { expect(result.current.items).toHaveLength(2); })
+    expect(result.current.items?.[0]?.id).not.toBe(id1)
   })
 
   it('sets loadError when the DB call fails', async () => {
@@ -51,7 +51,7 @@ describe('useMemosData', () => {
 
     const { result } = renderHook(() => useMemosData())
 
-    await waitFor(() => expect(result.current.loadError).toBe(true))
+    await waitFor(() => { expect(result.current.loadError).toBe(true); })
     expect(result.current.items).toBeNull()
     spy.mockRestore()
   })
@@ -62,7 +62,7 @@ describe('useMemosData', () => {
       .mockRejectedValueOnce(new Error('DB error'))
 
     const { result } = renderHook(() => useMemosData())
-    await waitFor(() => expect(result.current.loadError).toBe(true))
+    await waitFor(() => { expect(result.current.loadError).toBe(true); })
     spy.mockRestore()
 
     await act(async () => {
@@ -74,7 +74,7 @@ describe('useMemosData', () => {
 
   it('refetchItems updates the list after a new memo is created', async () => {
     const { result } = renderHook(() => useMemosData())
-    await waitFor(() => expect(result.current.items).toHaveLength(0))
+    await waitFor(() => { expect(result.current.items).toHaveLength(0); })
 
     await createMemo('New memo')
 
@@ -88,7 +88,7 @@ describe('useMemosData', () => {
   it('refetchItems reflects a deletion', async () => {
     const id = await createMemo('To delete')
     const { result } = renderHook(() => useMemosData())
-    await waitFor(() => expect(result.current.items).toHaveLength(1))
+    await waitFor(() => { expect(result.current.items).toHaveLength(1); })
 
     await deleteMemo(id)
 
@@ -101,7 +101,7 @@ describe('useMemosData', () => {
 
   it('refetches when the tab becomes visible', async () => {
     const { result } = renderHook(() => useMemosData())
-    await waitFor(() => expect(result.current.items).toHaveLength(0))
+    await waitFor(() => { expect(result.current.items).toHaveLength(0); })
 
     await createMemo('Added in another tab')
 
@@ -114,12 +114,12 @@ describe('useMemosData', () => {
       document.dispatchEvent(new Event('visibilitychange'))
     })
 
-    await waitFor(() => expect(result.current.items).toHaveLength(1))
+    await waitFor(() => { expect(result.current.items).toHaveLength(1); })
   })
 
   it('does not refetch when tab becomes hidden', async () => {
     const { result } = renderHook(() => useMemosData())
-    await waitFor(() => expect(result.current.items).toHaveLength(0))
+    await waitFor(() => { expect(result.current.items).toHaveLength(0); })
 
     await createMemo('Should not appear')
 
@@ -147,8 +147,8 @@ describe('useMemosData — updatedAt ordering after edit', () => {
     await createMemo('Second')
 
     const { result } = renderHook(() => useMemosData())
-    await waitFor(() => expect(result.current.items).toHaveLength(2))
-    expect(result.current.items?.[0].id).not.toBe(id1)
+    await waitFor(() => { expect(result.current.items).toHaveLength(2); })
+    expect(result.current.items?.[0]?.id).not.toBe(id1)
 
     await new Promise((r) => setTimeout(r, 5))
     await updateMemoById(id1, { text: 'First (edited)' })
@@ -157,6 +157,6 @@ describe('useMemosData — updatedAt ordering after edit', () => {
       await result.current.refetchItems()
     })
 
-    expect(result.current.items?.[0].id).toBe(id1)
+    expect(result.current.items?.[0]?.id).toBe(id1)
   })
 })
