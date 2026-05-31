@@ -67,9 +67,12 @@ describe('MemoPage — Save button state (create mode)', () => {
 
     await userEvent.click(getSaveButton())
 
-    await waitFor(() => {
-      expect(screen.getByText('Saved')).toBeInTheDocument()
-    })
+    await waitFor(
+      () => {
+        expect(screen.getByText('Saved')).toBeInTheDocument()
+      },
+      { timeout: 2500 },
+    )
     expect(getSaveButton()).toBeDisabled()
 
     expect(await memosDB.memos.count()).toBe(1)
@@ -79,9 +82,12 @@ describe('MemoPage — Save button state (create mode)', () => {
     renderCreatePage()
     await userEvent.type(screen.getByLabelText('Title'), 'My memo')
     await userEvent.click(getSaveButton())
-    await waitFor(() => {
-      expect(screen.getByText('Saved')).toBeInTheDocument()
-    })
+    await waitFor(
+      () => {
+        expect(screen.getByText('Saved')).toBeInTheDocument()
+      },
+      { timeout: 2500 },
+    )
 
     await userEvent.type(screen.getByLabelText('Title'), ' updated')
 

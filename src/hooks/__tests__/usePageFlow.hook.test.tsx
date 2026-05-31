@@ -20,6 +20,7 @@ const defaultCreateOptions = (overrides = {}) => ({
   hasChanges: true,
   draftKey: DRAFT_KEY,
   mode: MemoPageMode.Create,
+  minSaveMs: 0,
   ...overrides,
 })
 
@@ -30,6 +31,7 @@ const defaultEditOptions = (memoId: string, overrides = {}) => ({
   draftKey: DRAFT_KEY,
   mode: MemoPageMode.Edit,
   memoId,
+  minSaveMs: 0,
   ...overrides,
 })
 
@@ -113,6 +115,23 @@ describe('saveNote — create mode', () => {
     expect(memos[0]?.text).toBe('New memo content')
   })
 
+  it('creates only one memo when saveNote is invoked repeatedly in parallel', async () => {
+    const { result } = renderHook(
+      () => usePageFlow(defaultCreateOptions({ text: 'Rapid clicks' })),
+      { wrapper },
+    )
+
+    await act(async () => {
+      await Promise.all([
+        result.current.saveNote(),
+        result.current.saveNote(),
+        result.current.saveNote(),
+      ])
+    })
+
+    expect(await dbApi.countMemos()).toBe(1)
+  })
+
   it('removes the draft from localStorage on success', async () => {
     localStorage.setItem(DRAFT_KEY, 'draft text')
     localStorage.setItem(`${DRAFT_KEY}-title`, 'draft title')
@@ -168,6 +187,18 @@ describe('saveNote — create mode', () => {
     await savePromise
 
     expect(result.current.saving).toBe(false)
+  })
+
+  it('keeps saving for at least minSaveMs', async () => {
+    const { result } = renderHook(
+      () => usePageFlow(defaultCreateOptions({ minSaveMs: 200 })),
+      { wrapper },
+    )
+
+    const startedAt = Date.now()
+    await act(async () => { await result.current.saveNote() })
+
+    expect(Date.now() - startedAt).toBeGreaterThanOrEqual(200)
   })
 })
 

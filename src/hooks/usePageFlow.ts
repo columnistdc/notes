@@ -1,8 +1,10 @@
-import { type RefObject, useCallback, useState } from 'react'
+import { type RefObject, useCallback, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { MemoPageMode } from '@/constants.ts'
 import { countMemos, createMemo, MemoConflictError, updateMemoById } from '@/db/dbApi.ts'
+
+const DEFAULT_MIN_SAVE_MS = 1000
 
 interface PageFlowOptions {
   text: string
@@ -11,6 +13,7 @@ interface PageFlowOptions {
   draftKey: string
   memoId?: string
   expectedUpdatedAt?: RefObject<number | undefined>
+  minSaveMs?: number
   onSave?: () => void
   onDiscard?: () => void
   onValidationError?: () => void
@@ -29,10 +32,11 @@ interface PageFlow {
 }
 
 export function usePageFlow(options: PageFlowOptions): PageFlow {
-  const { text, title, hasChanges, draftKey, memoId: id, expectedUpdatedAt, onSave, onDiscard, onValidationError, onSaveError, onConflict, mode } = options
+  const { text, title, hasChanges, draftKey, memoId: id, expectedUpdatedAt, minSaveMs = DEFAULT_MIN_SAVE_MS, onSave, onDiscard, onValidationError, onSaveError, onConflict, mode } = options
   const navigate = useNavigate()
   const [saving, setSaving] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
+  const savingRef = useRef(false)
 
   const clearDraft = useCallback(() => {
     localStorage.removeItem(draftKey)
@@ -59,6 +63,8 @@ export function usePageFlow(options: PageFlowOptions): PageFlow {
   }, [text, title, hasChanges, navigateToMemos])
 
   const saveNote = useCallback(async () => {
+    if (savingRef.current) return
+
     const trimmedText = text.trim()
     const trimmedTitle = title.trim()
 
@@ -67,16 +73,21 @@ export function usePageFlow(options: PageFlowOptions): PageFlow {
       return
     }
 
+    if (mode === MemoPageMode.Edit) {
+      const memoId = Number(id)
+      if (!id || isNaN(memoId)) {
+        console.error('Invalid memo ID:', id)
+        return
+      }
+    }
+
+    savingRef.current = true
     setSaving(true)
+    const startedAt = Date.now()
     try {
       if (mode === MemoPageMode.Edit) {
-        const memoId = Number(id)
-        if (!id || isNaN(memoId)) {
-          console.error('Invalid memo ID:', id)
-          return
-        }
         await updateMemoById(
-          memoId,
+          Number(id),
           { text: trimmedText, title: trimmedTitle },
           expectedUpdatedAt?.current,
         )
@@ -93,9 +104,12 @@ export function usePageFlow(options: PageFlowOptions): PageFlow {
         onSaveError?.()
       }
     } finally {
+      const remaining = minSaveMs - (Date.now() - startedAt)
+      if (remaining > 0) await new Promise((resolve) => setTimeout(resolve, remaining))
+      savingRef.current = false
       setSaving(false)
     }
-  }, [text, title, onValidationError, onSaveError, onConflict, expectedUpdatedAt, mode, onSave, id, clearDraft])
+  }, [text, title, onValidationError, onSaveError, onConflict, expectedUpdatedAt, minSaveMs, mode, onSave, id, clearDraft])
 
   const discardAndLeave = useCallback(async () => {
     clearDraft()
