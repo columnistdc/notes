@@ -38,8 +38,12 @@ export function usePageFlow(options: PageFlowOptions): PageFlow {
   }, [draftKey])
 
   const navigateToMemos = useCallback(async () => {
-    const total = await countMemos()
-    void navigate(total === 0 ? '/' : '/memos', { replace: true })
+    try {
+      const total = await countMemos()
+      void navigate(total === 0 ? '/' : '/memos', { replace: true })
+    } catch {
+      void navigate('/memos', { replace: true })
+    }
   }, [navigate])
 
   const handleBack = useCallback(async () => {
