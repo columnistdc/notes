@@ -5,7 +5,6 @@ import react from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import simpleImportSort from 'eslint-plugin-simple-import-sort'
-import tailwind from 'eslint-plugin-tailwindcss'
 import globals from 'globals'
 import tseslint from 'typescript-eslint'
 import js from '@eslint/js'
@@ -38,7 +37,6 @@ export default tseslint.config(
 
     plugins: {
       react,
-      tailwindcss: tailwind,
       prettier: prettierPlugin,
       'simple-import-sort': simpleImportSort,
       'jsx-a11y': jsxA11y,
@@ -46,10 +44,6 @@ export default tseslint.config(
 
     settings: {
       react: { version: 'detect' },
-      tailwindcss: {
-        callees: ['clsx', 'ctl', 'classnames'],
-        removeDuplicates: true,
-      },
     },
 
     rules: {
@@ -68,8 +62,6 @@ export default tseslint.config(
       'no-console': ['warn', { allow: ['warn', 'error'] }],
       'no-debugger': 'error',
       'prefer-const': 'error',
-      'tailwindcss/classnames-order': 'warn',
-      'tailwindcss/no-contradicting-classname': 'error',
       'simple-import-sort/imports': [
         'error',
         {

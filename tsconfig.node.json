@@ -26,8 +26,6 @@
     "vitest.config.ts",
     "vitest.setup.node.ts",
     "vitest.setup.dom.ts",
-    "postcss.config.ts",
-    "tailwind.config.ts",
     "eslint.config.js"
   ]
 }
