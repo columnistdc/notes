@@ -96,6 +96,14 @@ export default tseslint.config(
     },
   },
 
+  // Routes file exports a router object, not components — fast-refresh rule doesn't apply
+  {
+    files: ['src/routes/**'],
+    rules: {
+      'react-refresh/only-export-components': 'off',
+    },
+  },
+
   configPrettier,
   {
     files: ['**/*.{test,spec}.{ts,tsx,js,jsx}', '**/*.dom.test.{ts,tsx}', '**/*.component.test.{ts,tsx}'],
