@@ -8,6 +8,16 @@ export default defineConfig({
     },
   },
   test: {
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'lcov'],
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: ['src/**/*.test.{ts,tsx}', 'src/**/*.dom.test.{ts,tsx}', 'src/**/*.component.test.{ts,tsx}', 'src/vite-env.d.ts', 'src/globals.d.ts'],
+      thresholds: {
+        lines: 3,
+        functions: 30,
+      },
+    },
     projects: [
       {
         test: {
