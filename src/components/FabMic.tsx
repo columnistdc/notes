@@ -39,22 +39,20 @@ export default function FabMic({ onResult, disabled = false, className }: Props)
         type="button"
         onClick={handleClick}
         aria-pressed={listening}
-        aria-disabled={disabled || !isSupported}
-        aria-busy={listening}
         aria-label={buttonLabel}
         title={buttonLabel}
+        disabled={disabled || !isSupported}
         className={[
           btnBase,
           orangeBorder,
           disabled || !isSupported ? disabledCls : `${normalBg} ${activeHover}`,
           'relative',
-          className || '',
+          className ?? '',
         ].join(' ')}
-        disabled={disabled || !isSupported}
       >
         {listening && (
           <span
-            aria-hidden
+            aria-hidden="true"
             className="absolute inset-0 animate-ping rounded-full bg-orange-400/30"
           />
         )}
@@ -64,7 +62,6 @@ export default function FabMic({ onResult, disabled = false, className }: Props)
           className={`h-6 w-6 md:h-7 md:w-7 ${iconCls}`}
           fill="currentColor"
           aria-hidden="true"
-          role="img"
         >
           <path d="M12 14a3 3 0 0 0 3-3V7a3 3 0 1 0-6 0v4a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V20H8v2h8v-2h-3v-2.08A7 7 0 0 0 19 11h-2Z" />
         </svg>
@@ -72,18 +69,18 @@ export default function FabMic({ onResult, disabled = false, className }: Props)
 
       {!isSupported && (
         <div
-          className="rounded-lg border border-amber-200 bg-white/90 px-3 py-2 text-sm text-amber-700 shadow"
           role="alert"
           aria-live="polite"
+          className="rounded-lg border border-amber-200 bg-white/90 px-3 py-2 text-sm text-amber-700 shadow"
         >
           Speech recognition is not supported in your browser
         </div>
       )}
       {error && (
         <div
-          className="rounded-lg border border-red-200 bg-white/90 px-3 py-2 text-sm text-red-700 shadow"
           role="alert"
           aria-live="assertive"
+          className="rounded-lg border border-red-200 bg-white/90 px-3 py-2 text-sm text-red-700 shadow"
         >
           Speech recognition error: {error}
         </div>
