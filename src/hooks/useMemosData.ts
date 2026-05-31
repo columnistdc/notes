@@ -23,12 +23,23 @@ export function useMemosData(): MemosData {
     }
   }, [])
 
+  // Initial load. Inlined (rather than calling refetchItems) so state is only
+  // set after the await — and guarded so we never set state after unmount.
   useEffect(() => {
-    // setState is called asynchronously inside refetchItems (after await),
-    // not synchronously in the effect body — rule fires a false positive here.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    void refetchItems()
-  }, [refetchItems])
+    let active = true
+    listMemoSummaries()
+      .then((memos) => {
+        if (!active) return
+        setItems(memos)
+        setLoadError(false)
+      })
+      .catch(() => {
+        if (active) setLoadError(true)
+      })
+    return () => {
+      active = false
+    }
+  }, [])
 
   // Refetch when the tab becomes visible so changes made in another tab
   // (create, edit, delete) are reflected without requiring a manual reload.

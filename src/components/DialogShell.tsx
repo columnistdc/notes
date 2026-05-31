@@ -1,4 +1,4 @@
-import { type KeyboardEvent, type ReactNode, useEffect, useRef } from 'react'
+import { type ReactNode, useEffect, useRef } from 'react'
 
 interface DialogShellProps {
   labelId: string
@@ -6,51 +6,59 @@ interface DialogShellProps {
   children: ReactNode
 }
 
+const FOCUSABLE_SELECTOR =
+  'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+
 export const DialogShell = ({ labelId, onClose, children }: DialogShellProps) => {
   const dialogRef = useRef<HTMLDivElement>(null)
 
+  // onClose is often an inline function from the parent; keep it in a ref so the
+  // keydown effect doesn't re-run (and steal focus) on every parent re-render.
+  const onCloseRef = useRef(onClose)
   useEffect(() => {
-    const prev = document.activeElement as HTMLElement | null
+    onCloseRef.current = onClose
+  })
 
-    const firstFocusable = dialogRef.current?.querySelector<HTMLElement>(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-    )
-    firstFocusable?.focus()
-
+  // Focus the first focusable element on open; restore focus on close. Runs once.
+  useEffect(() => {
+    const previouslyFocused = document.activeElement as HTMLElement | null
+    dialogRef.current?.querySelector<HTMLElement>(FOCUSABLE_SELECTOR)?.focus()
     return () => {
-      prev?.focus()
+      previouslyFocused?.focus()
     }
   }, [])
 
-  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === 'Escape') {
-      onClose()
-      return
-    }
+  // Escape to close, Tab to cycle focus within the dialog (focus trap).
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onCloseRef.current()
+        return
+      }
 
-    if (e.key !== 'Tab') return
+      if (e.key !== 'Tab') return
 
-    const focusable = Array.from(
-      dialogRef.current?.querySelectorAll<HTMLElement>(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-      ) ?? [],
-    )
-    const first = focusable[0]
-    const last = focusable[focusable.length - 1]
-    if (!first || !last) return
+      const elements = Array.from(
+        dialogRef.current?.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR) ?? [],
+      )
+      const first = elements[0]
+      const last = elements[elements.length - 1]
+      if (!first || !last) return
 
-    if (e.shiftKey) {
-      if (document.activeElement === first) {
+      if (e.shiftKey && document.activeElement === first) {
         e.preventDefault()
         last.focus()
-      }
-    } else {
-      if (document.activeElement === last) {
+      } else if (!e.shiftKey && document.activeElement === last) {
         e.preventDefault()
         first.focus()
       }
     }
-  }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [])
 
   return (
     <div
@@ -59,12 +67,7 @@ export const DialogShell = ({ labelId, onClose, children }: DialogShellProps) =>
       role="dialog"
       aria-labelledby={labelId}
     >
-      {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
-      <div
-        ref={dialogRef}
-        className="w-full max-w-md rounded-2xl bg-white p-5 shadow-xl"
-        onKeyDown={handleKeyDown}
-      >
+      <div ref={dialogRef} className="w-full max-w-md rounded-2xl bg-white p-5 shadow-xl">
         {children}
       </div>
     </div>
