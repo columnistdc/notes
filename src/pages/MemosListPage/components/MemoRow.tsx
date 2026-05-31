@@ -10,8 +10,6 @@ type MemoRowProps = {
 }
 
 export const MemoRow = ({ item, onDelete }: MemoRowProps) => {
-  // A persisted memo always has an id; guard defensively so the rest of the
-  // component can treat it as a definite number (no edit/delete without one).
   if (item.id === undefined) return null
 
   const timestamp = formatTimestamp(item.createdAt)
@@ -35,12 +33,10 @@ export const MemoRow = ({ item, onDelete }: MemoRowProps) => {
                 {createTextPreview(item.text)}
               </div>
             </div>
-            {/* Spacer keeps layout consistent; actual timestamp and button are siblings of the Link */}
             <div className="w-28 shrink-0" aria-hidden="true" />
           </div>
         </Link>
 
-        {/* Siblings of Link — not nested inside it */}
         <div className="pointer-events-none absolute inset-y-0 right-4 flex items-center gap-2 md:right-5">
           <div className="text-right text-sm text-slate-500">{timestamp}</div>
           <button

@@ -127,9 +127,7 @@ describe('updateMemoById', () => {
     const id = await createMemo('Original')
     const snapshot = await getMemoById(id)
     await new Promise((r) => setTimeout(r, 5))
-    // Simulate another tab saving — updatedAt advances
     await updateMemoById(id, { text: 'Modified by other tab' })
-    // Now save with stale expectedUpdatedAt
     await expect(
       updateMemoById(id, { text: 'My changes' }, snapshot?.updatedAt),
     ).rejects.toBeInstanceOf(MemoConflictError)
@@ -143,7 +141,7 @@ describe('updateMemoById', () => {
     try {
       await updateMemoById(id, { text: 'Loser' }, snapshot?.updatedAt)
     } catch {
-      // expected MemoConflictError
+      // intentionally ignored
     }
     const memo = await getMemoById(id)
     expect(memo?.text).toBe('Winner')

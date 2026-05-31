@@ -5,8 +5,6 @@ import userEvent from '@testing-library/user-event'
 
 import FabMic from '../FabMic.tsx'
 
-// useSpeechRecognition uses the Web Speech API which is unavailable in jsdom.
-// We mock the whole hook to control isSupported / listening / error states.
 vi.mock('@/hooks/useSpeechRecognition', () => ({
   useSpeechRecognition: vi.fn(() => ({
     isSupported: true,

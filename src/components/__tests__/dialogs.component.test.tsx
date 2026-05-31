@@ -73,7 +73,6 @@ describe('ConfirmDialog', () => {
     const last = buttons[buttons.length - 1]
     if (!first || !last) throw new Error('expected focusable buttons in dialog')
 
-    // Put focus on the last button, then Tab — should wrap to first
     last.focus()
     expect(document.activeElement).toBe(last)
     await userEvent.keyboard('{Tab}')

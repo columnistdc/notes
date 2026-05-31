@@ -23,8 +23,6 @@ export function useMemosData(): MemosData {
     }
   }, [])
 
-  // Initial load. Inlined (rather than calling refetchItems) so state is only
-  // set after the await — and guarded so we never set state after unmount.
   useEffect(() => {
     let active = true
     listMemoSummaries()
@@ -41,8 +39,6 @@ export function useMemosData(): MemosData {
     }
   }, [])
 
-  // Refetch when the tab becomes visible so changes made in another tab
-  // (create, edit, delete) are reflected without requiring a manual reload.
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {

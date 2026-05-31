@@ -24,8 +24,6 @@ export function useTextController(options: TextControllerOptions): TextControlle
   const { draftKey, mode, memoId: id } = options
   const navigate = useNavigate()
 
-  // For create mode, read localStorage synchronously during initialization so
-  // we avoid setting state inside the effect (which causes cascading renders).
   const initialDraft = mode === MemoPageMode.Create ? (localStorage.getItem(draftKey) ?? '') : ''
   const initialDraftTitle =
     mode === MemoPageMode.Create ? (localStorage.getItem(`${draftKey}-title`) ?? '') : ''

@@ -116,7 +116,6 @@ describe('useDeleteMemo', () => {
       await result.current.handleDeleteSelectedMemo()
     })
 
-    // Dialog stays open on error so user can retry
     await waitFor(() => { expect(result.current.isDeleteConfirmShown).toBe(true); })
     spy.mockRestore()
   })

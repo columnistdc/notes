@@ -33,8 +33,6 @@ export function useSpeechRecognition(options: SpeechRecognitionHookOptions): Spe
     grammars,
   } = options
 
-  // Keep onResult in a ref so the effect doesn't re-run (and tear down the
-  // recognition instance) every time the parent re-renders with a new callback.
   const onResultRef = useRef(options.onResult)
   useEffect(() => {
     onResultRef.current = options.onResult
@@ -72,9 +70,6 @@ export function useSpeechRecognition(options: SpeechRecognitionHookOptions): Spe
       recognition.maxAlternatives = maxAlternatives
 
       if (grammars?.length) {
-        // Runtime feature detection via globalThis: the SpeechGrammarList
-        // globals are typed as always-present but are absent in browsers
-        // without grammar support, so we look them up as optional.
         const globals = globalThis as {
           SpeechGrammarList?: new () => SpeechGrammarList
           webkitSpeechGrammarList?: new () => SpeechGrammarList

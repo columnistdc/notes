@@ -15,6 +15,4 @@ function getTabDraftKey(): string {
   return `${MEMO_DRAFT_KEY}-${tabId}`
 }
 
-// Scoped to the current tab via sessionStorage UUID so multiple /new
-// tabs don't share or overwrite each other's draft.
 export const TAB_DRAFT_KEY = getTabDraftKey()

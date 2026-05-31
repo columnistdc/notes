@@ -25,8 +25,6 @@ const Button = forwardRef<HTMLButtonElement, Props>(function Button(
       ref={ref}
       type={type}
       aria-label={ariaLabel}
-      // twMerge resolves Tailwind conflicts so a consumer's className (e.g.
-      // bg-red-600) deterministically overrides the base (bg-white).
       className={twMerge(
         clsx(
           'inline-flex items-center justify-center bg-white transition',

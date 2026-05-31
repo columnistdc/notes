@@ -70,7 +70,6 @@ describe('MemoHeader', () => {
 
   it('shows a "Saved" indicator on the Save button when saved=true', () => {
     render(<MemoHeader {...defaults} saved canSave={false} />)
-    // sr-only "Saved" text accompanies the green checkmark
     expect(screen.getByRole('button', { name: /saved/i })).toBeInTheDocument()
   })
 
@@ -80,8 +79,6 @@ describe('MemoHeader', () => {
   })
 
   it('Save is disabled but still shows the saved indicator after a save', () => {
-    // After a successful save there are no changes, so Save is disabled,
-    // yet the green tick remains visible.
     render(<MemoHeader {...defaults} saved canSave={false} />)
     const saveButton = screen.getByRole('button', { name: /save/i })
     expect(saveButton).toBeDisabled()

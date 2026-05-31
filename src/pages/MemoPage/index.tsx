@@ -47,8 +47,6 @@ export const MemoPage: FC<Props> = ({ mode }) => {
       onConflict: () => { setConflictError(true); },
     })
 
-  // Common reaction to any edit: mark unsaved changes, clear the saved tick
-  // and any stale alerts.
   const markChanged = useCallback(() => {
     setHasChanges(true)
     setSaved(false)

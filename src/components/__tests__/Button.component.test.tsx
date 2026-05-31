@@ -22,9 +22,6 @@ describe('Button', () => {
     expect(onClick).toHaveBeenCalledOnce()
   })
 
-  // Regression: a consumer's background class must override the base bg-white.
-  // Without tailwind-merge, both bg-white and bg-red-600 survive and Tailwind's
-  // CSS order (not class-attribute order) decides — which left white-on-white.
   it('lets a consumer className override the base background', () => {
     render(
       <Button className="bg-red-600 text-white">

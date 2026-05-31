@@ -8,7 +8,6 @@ import { memosDB } from '@/db/db.ts'
 
 import { MemoPage } from '../index.tsx'
 
-// FabMic relies on the Web Speech API, unavailable in jsdom — mock the hook.
 vi.mock('@/hooks/useSpeechRecognition', () => ({
   useSpeechRecognition: () => ({
     isSupported: false,
@@ -68,13 +67,11 @@ describe('MemoPage — Save button state (create mode)', () => {
 
     await userEvent.click(getSaveButton())
 
-    // After save: tick appears, no further changes → Save disabled
     await waitFor(() => {
       expect(screen.getByText('Saved')).toBeInTheDocument()
     })
     expect(getSaveButton()).toBeDisabled()
 
-    // And the memo was actually persisted
     expect(await memosDB.memos.count()).toBe(1)
   })
 
@@ -86,7 +83,6 @@ describe('MemoPage — Save button state (create mode)', () => {
       expect(screen.getByText('Saved')).toBeInTheDocument()
     })
 
-    // Edit again
     await userEvent.type(screen.getByLabelText('Title'), ' updated')
 
     expect(screen.queryByText('Saved')).not.toBeInTheDocument()

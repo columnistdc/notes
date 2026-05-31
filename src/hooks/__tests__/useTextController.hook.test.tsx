@@ -57,7 +57,6 @@ describe('create mode — draft initialisation', () => {
       { wrapper },
     )
 
-    // ?? correctly preserves '' (unlike ||)
     expect(result.current.text).toBe('')
     expect(result.current.title).toBe('title only')
   })
@@ -95,7 +94,6 @@ describe('create mode — draft auto-save', () => {
   it('does not save to localStorage if content has not changed from initial', async () => {
     localStorage.setItem(DRAFT_KEY, 'existing')
 
-    // No reference to result needed — just verify localStorage is not modified
     renderHook(
       () => useTextController({ mode: MemoPageMode.Create, draftKey: DRAFT_KEY }),
       { wrapper },
@@ -171,8 +169,6 @@ describe('edit mode — memo loading', () => {
 
 describe('edit mode — invalid or missing memoId', () => {
   it('does not load text when memoId is non-numeric (navigates away)', async () => {
-    // With a non-numeric id, the hook calls navigate() and returns early.
-    // Text stays empty — no memo is fetched.
     const { result } = renderHook(
       () =>
         useTextController({
@@ -212,7 +208,6 @@ describe('insertAtCursor', () => {
       { wrapper },
     )
 
-    // textareaRef.current is null — insertAtCursor should be a no-op
     act(() => { result.current.insertAtCursor('hello'); })
 
     expect(result.current.text).toBe('')

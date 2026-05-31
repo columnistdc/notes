@@ -43,8 +43,6 @@ describe('useMemosData', () => {
   })
 
   it('sets loadError when the DB call fails', async () => {
-    // listMemoSummaries swallows Dexie errors internally, so we mock
-    // the function itself to simulate a rejection reaching the hook.
     const spy = vi
       .spyOn(dbApi, 'listMemoSummaries')
       .mockRejectedValueOnce(new Error('DB error'))
@@ -105,7 +103,6 @@ describe('useMemosData', () => {
 
     await createMemo('Added in another tab')
 
-    // Simulate tab becoming visible
     Object.defineProperty(document, 'visibilityState', {
       value: 'visible',
       writable: true,
@@ -131,11 +128,9 @@ describe('useMemosData', () => {
       document.dispatchEvent(new Event('visibilitychange'))
     })
 
-    // Give it time to potentially (wrongly) fetch
     await new Promise((r) => setTimeout(r, 50))
     expect(result.current.items).toHaveLength(0)
 
-    // Restore
     Object.defineProperty(document, 'visibilityState', { value: 'visible', writable: true })
   })
 })
