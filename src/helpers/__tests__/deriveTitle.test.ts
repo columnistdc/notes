@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, expect, it } from 'vitest'
 
 import { deriveTitle } from '../deriveTitle'
@@ -9,11 +8,11 @@ describe('deriveTitle', () => {
   })
 
   it('should return empty string for null input', () => {
-    expect(deriveTitle(null as any)).toBe('')
+    expect(deriveTitle(null)).toBe('')
   })
 
   it('should return empty string for undefined input', () => {
-    expect(deriveTitle(undefined as any)).toBe('')
+    expect(deriveTitle(undefined)).toBe('')
   })
 
   it('should return empty string for whitespace only input', () => {

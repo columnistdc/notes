@@ -1,5 +1,5 @@
 import { type RefObject, useCallback, useEffect, useRef, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import { MemoPageMode } from '@/constants.ts'
 import { getMemoById } from '@/db/dbApi.ts'
@@ -7,6 +7,7 @@ import { getMemoById } from '@/db/dbApi.ts'
 interface TextControllerOptions {
   draftKey: string
   mode: MemoPageMode
+  memoId?: string
 }
 
 interface TextController {
@@ -16,44 +17,45 @@ interface TextController {
   setText: (value: string) => void
   insertAtCursor: (snippet: string) => void
   textareaRef: RefObject<HTMLTextAreaElement | null>
+  loadedUpdatedAt: RefObject<number | undefined>
 }
 
 export function useTextController(options: TextControllerOptions): TextController {
-  const { draftKey, mode } = options
-  const [title, setTitle] = useState('')
-  const [text, setText] = useState('')
+  const { draftKey, mode, memoId: id } = options
+  const navigate = useNavigate()
+
+  const initialDraft = mode === MemoPageMode.Create ? (localStorage.getItem(draftKey) ?? '') : ''
+  const initialDraftTitle =
+    mode === MemoPageMode.Create ? (localStorage.getItem(`${draftKey}-title`) ?? '') : ''
+
+  const [text, setText] = useState(initialDraft)
+  const [title, setTitle] = useState(initialDraftTitle)
   const textareaRef = useRef<HTMLTextAreaElement | null>(null)
-  const initialText = useRef('')
-  const initialTitle = useRef('')
-  const { id } = useParams<{ id: string }>()
+  const initialText = useRef(initialDraft)
+  const initialTitle = useRef(initialDraftTitle)
+  const loadedUpdatedAt = useRef<number | undefined>(undefined)
 
   useEffect(() => {
-    if (mode === MemoPageMode.Edit) {
-      const memoId = Number(id)
-      if (!id || isNaN(memoId)) {
-        console.error('Invalid memo ID:', id)
+    if (mode !== MemoPageMode.Edit) return
+
+    const memoId = Number(id)
+    if (!id || isNaN(memoId)) {
+      void navigate('/memos', { replace: true })
+      return
+    }
+
+    void getMemoById(memoId).then((memo) => {
+      if (!memo) {
+        void navigate('/memos', { replace: true })
         return
       }
-      getMemoById(Number(memoId)).then((memo) => {
-        if (memo) {
-          const memoText = memo.text || ''
-          const memoTitle = memo.title || ''
-          setText(memoText)
-          setTitle(memoTitle)
-          initialText.current = memoText
-          initialTitle.current = memoTitle
-        }
-      })
-    } else {
-      const draft = localStorage.getItem(draftKey) || ''
-      const titleDraft = localStorage.getItem(`${draftKey}-title`) || ''
-
-      setText(draft)
-      setTitle(titleDraft)
-      initialText.current = draft
-      initialTitle.current = titleDraft
-    }
-  }, [draftKey, id, mode])
+      setText(memo.text)
+      setTitle(memo.title)
+      initialText.current = memo.text
+      initialTitle.current = memo.title
+      loadedUpdatedAt.current = memo.updatedAt
+    })
+  }, [draftKey, id, mode, navigate])
 
   useEffect(() => {
     if (mode === MemoPageMode.Edit) {
@@ -68,7 +70,7 @@ export function useTextController(options: TextControllerOptions): TextControlle
       }
     }, 300)
 
-    return () => clearTimeout(timeoutId)
+    return () => { clearTimeout(timeoutId); }
   }, [text, title, draftKey, mode])
 
   useEffect(() => {
@@ -83,14 +85,14 @@ export function useTextController(options: TextControllerOptions): TextControlle
       }
     }
     window.addEventListener('beforeunload', handler)
-    return () => window.removeEventListener('beforeunload', handler)
+    return () => { window.removeEventListener('beforeunload', handler); }
   }, [text, title, draftKey, mode])
 
   const insertAtCursor = useCallback((snippet: string) => {
     const el = textareaRef.current
     if (!el) return
-    const start = el.selectionStart ?? el.value.length
-    const end = el.selectionEnd ?? el.value.length
+    const start = el.selectionStart
+    const end = el.selectionEnd
     const newValue = el.value.slice(0, start) + snippet + el.value.slice(end)
     setText(newValue)
     requestAnimationFrame(() => {
@@ -107,5 +109,6 @@ export function useTextController(options: TextControllerOptions): TextControlle
     setText,
     insertAtCursor,
     textareaRef,
+    loadedUpdatedAt,
   }
 }

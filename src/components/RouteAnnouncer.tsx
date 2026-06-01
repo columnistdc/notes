@@ -1,0 +1,21 @@
+import { useEffect, useRef } from 'react'
+import { useLocation } from 'react-router-dom'
+
+const PAGE_LABELS: Record<string, string> = {
+  '/': 'Home',
+  '/memos': 'All Memos',
+  '/new': 'New Memo',
+}
+
+export const RouteAnnouncer = () => {
+  const { pathname } = useLocation()
+  const ref = useRef<HTMLSpanElement>(null)
+
+  useEffect(() => {
+    if (!ref.current) return
+    ref.current.textContent =
+      PAGE_LABELS[pathname] ?? (pathname.startsWith('/edit/') ? 'Edit Memo' : 'Page changed')
+  }, [pathname])
+
+  return <span ref={ref} aria-live="polite" aria-atomic="true" className="sr-only" />
+}

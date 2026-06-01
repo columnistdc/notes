@@ -1,17 +1,24 @@
-import { useCallback, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { type RefObject, useCallback, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import { MemoPageMode } from '@/constants.ts'
-import { countMemos, createMemo, updateMemoById } from '@/db/dbApi.ts'
+import { countMemos, createMemo, MemoConflictError, updateMemoById } from '@/db/dbApi.ts'
+
+const DEFAULT_MIN_SAVE_MS = 1000
 
 interface PageFlowOptions {
   text: string
   title: string
   hasChanges: boolean
   draftKey: string
+  memoId?: string
+  expectedUpdatedAt?: RefObject<number | undefined>
+  minSaveMs?: number
   onSave?: () => void
   onDiscard?: () => void
   onValidationError?: () => void
+  onSaveError?: () => void
+  onConflict?: () => void
   mode: MemoPageMode
 }
 
@@ -25,11 +32,11 @@ interface PageFlow {
 }
 
 export function usePageFlow(options: PageFlowOptions): PageFlow {
-  const { text, title, hasChanges, draftKey, onSave, onDiscard, onValidationError, mode } = options
+  const { text, title, hasChanges, draftKey, memoId: id, expectedUpdatedAt, minSaveMs = DEFAULT_MIN_SAVE_MS, onSave, onDiscard, onValidationError, onSaveError, onConflict, mode } = options
   const navigate = useNavigate()
   const [saving, setSaving] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
-  const { id } = useParams<{ id: string }>()
+  const savingRef = useRef(false)
 
   const clearDraft = useCallback(() => {
     localStorage.removeItem(draftKey)
@@ -37,8 +44,12 @@ export function usePageFlow(options: PageFlowOptions): PageFlow {
   }, [draftKey])
 
   const navigateToMemos = useCallback(async () => {
-    const total = await countMemos()
-    navigate(total === 0 ? '/' : '/memos', { replace: true })
+    try {
+      const total = await countMemos()
+      void navigate(total === 0 ? '/' : '/memos', { replace: true })
+    } catch {
+      void navigate('/memos', { replace: true })
+    }
   }, [navigate])
 
   const handleBack = useCallback(async () => {
@@ -48,10 +59,12 @@ export function usePageFlow(options: PageFlowOptions): PageFlow {
       setShowConfirm(true)
       return
     }
-    navigateToMemos()
+    await navigateToMemos()
   }, [text, title, hasChanges, navigateToMemos])
 
   const saveNote = useCallback(async () => {
+    if (savingRef.current) return
+
     const trimmedText = text.trim()
     const trimmedTitle = title.trim()
 
@@ -60,33 +73,48 @@ export function usePageFlow(options: PageFlowOptions): PageFlow {
       return
     }
 
+    if (mode === MemoPageMode.Edit) {
+      const memoId = Number(id)
+      if (!id || isNaN(memoId)) {
+        console.error('Invalid memo ID:', id)
+        return
+      }
+    }
+
+    savingRef.current = true
     setSaving(true)
+    const startedAt = Date.now()
     try {
       if (mode === MemoPageMode.Edit) {
-        const memoId = Number(id)
-        if (!id || isNaN(memoId)) {
-          console.error('Invalid memo ID:', id)
-          return
-        }
-        await updateMemoById(memoId, {
-          text: trimmedText,
-          title: trimmedTitle,
-        })
+        await updateMemoById(
+          Number(id),
+          { text: trimmedText, title: trimmedTitle },
+          expectedUpdatedAt?.current,
+        )
       } else {
         await createMemo(trimmedText, trimmedTitle)
       }
-      onSave?.()
-    } finally {
-      setSaving(false)
-      setShowConfirm(false)
       clearDraft()
+      setShowConfirm(false)
+      onSave?.()
+    } catch (err) {
+      if (err instanceof MemoConflictError) {
+        onConflict?.()
+      } else {
+        onSaveError?.()
+      }
+    } finally {
+      const remaining = minSaveMs - (Date.now() - startedAt)
+      if (remaining > 0) await new Promise((resolve) => setTimeout(resolve, remaining))
+      savingRef.current = false
+      setSaving(false)
     }
-  }, [text, title, onValidationError, mode, onSave, id, clearDraft])
+  }, [text, title, onValidationError, onSaveError, onConflict, expectedUpdatedAt, minSaveMs, mode, onSave, id, clearDraft])
 
   const discardAndLeave = useCallback(async () => {
     clearDraft()
     onDiscard?.()
-    navigateToMemos()
+    await navigateToMemos()
   }, [clearDraft, onDiscard, navigateToMemos])
 
   return { saving, showConfirm, setShowConfirm, handleBack, saveNote, discardAndLeave }

@@ -28,11 +28,20 @@ export function useSpeechRecognition(options: SpeechRecognitionHookOptions): Spe
   const {
     lang = typeof navigator !== 'undefined' ? navigator.language : 'en-US',
     continuous = false,
+    interimResults = false,
     maxAlternatives = 1,
     grammars,
   } = options
 
-  const [isSupported, setIsSupported] = useState(false)
+  const onResultRef = useRef(options.onResult)
+  useEffect(() => {
+    onResultRef.current = options.onResult
+  })
+
+  const [isSupported] = useState(
+    () =>
+      typeof SpeechRecognition !== 'undefined' || typeof webkitSpeechRecognition !== 'undefined',
+  )
   const [listening, setListening] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [transcript, setTranscript] = useState('')
@@ -48,10 +57,8 @@ export function useSpeechRecognition(options: SpeechRecognitionHookOptions): Spe
       } else if (typeof webkitSpeechRecognition !== 'undefined') {
         recognition = new webkitSpeechRecognition()
       } else {
-        setIsSupported(false)
         return
       }
-      setIsSupported(true)
     } catch (e) {
       console.error('SpeechRecognition initialization failed:', e)
     }
@@ -59,12 +66,15 @@ export function useSpeechRecognition(options: SpeechRecognitionHookOptions): Spe
     if (recognition) {
       recognition.lang = lang
       recognition.continuous = continuous
+      recognition.interimResults = interimResults
       recognition.maxAlternatives = maxAlternatives
 
       if (grammars?.length) {
-        const SGLConstructor =
-          (typeof SpeechGrammarList !== 'undefined' && SpeechGrammarList) ||
-          (typeof webkitSpeechGrammarList !== 'undefined' && webkitSpeechGrammarList)
+        const globals = globalThis as {
+          SpeechGrammarList?: new () => SpeechGrammarList
+          webkitSpeechGrammarList?: new () => SpeechGrammarList
+        }
+        const SGLConstructor = globals.SpeechGrammarList ?? globals.webkitSpeechGrammarList
 
         if (SGLConstructor) {
           const list = new SGLConstructor()
@@ -98,15 +108,15 @@ export function useSpeechRecognition(options: SpeechRecognitionHookOptions): Spe
 
         for (let i = event.resultIndex; i < event.results.length; i++) {
           const res = event.results[i]
-          const transcriptPart = res[0].transcript
-          if (res.isFinal) {
-            finalTranscript += transcriptPart
+          const alternative = res?.[0]
+          if (res?.isFinal && alternative) {
+            finalTranscript += alternative.transcript
           }
         }
 
         if (finalTranscript) {
           setTranscript((prev) => `${prev} ${finalTranscript}`.trim())
-          options.onResult(finalTranscript)
+          onResultRef.current(finalTranscript)
         }
       }
 
@@ -117,7 +127,7 @@ export function useSpeechRecognition(options: SpeechRecognitionHookOptions): Spe
       recognitionRef.current?.stop()
       recognitionRef.current = null
     }
-  }, [lang, continuous, maxAlternatives, grammars, options])
+  }, [lang, continuous, interimResults, maxAlternatives, grammars])
 
   const start = useCallback(() => {
     if (!recognitionRef.current) return

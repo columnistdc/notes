@@ -1,15 +1,34 @@
 import * as path from 'node:path'
 import { defineConfig } from 'vitest/config'
 
+const alias = { '@': path.resolve(__dirname, 'src') }
+
 export default defineConfig({
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, 'src'),
-    },
-  },
   test: {
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'lcov'],
+      include: ['src/**/*.{ts,tsx}'],
+      exclude: [
+        'src/**/*.test.{ts,tsx}',
+        'src/**/*.hook.test.{ts,tsx}',
+        'src/**/*.dom.test.{ts,tsx}',
+        'src/**/*.component.test.{ts,tsx}',
+        'src/vite-env.d.ts',
+        'src/globals.d.ts',
+        'src/test-matchers.d.ts',
+      ],
+      thresholds: {
+        lines: 50,
+        functions: 45,
+        branches: 55,
+        statements: 50,
+      },
+    },
     projects: [
+      // ─── Level 1: Unit — pure functions, node env ─────────────────────────
       {
+        resolve: { alias },
         test: {
           name: 'unit',
           environment: 'node',
@@ -18,6 +37,7 @@ export default defineConfig({
             '**/node_modules/**',
             '**/dist/**',
             '**/coverage/**',
+            'src/**/*.hook.test.{ts,tsx}',
             'src/**/*.dom.test.{ts,tsx}',
             'src/**/*.component.test.{ts,tsx}',
           ],
@@ -25,7 +45,21 @@ export default defineConfig({
           globals: true,
         },
       },
+      // ─── Level 2: Hook — renderHook + real Dexie via fake-indexeddb ───────
       {
+        resolve: { alias },
+        test: {
+          name: 'hook',
+          environment: 'jsdom',
+          include: ['src/**/*.hook.test.{ts,tsx}'],
+          exclude: ['**/node_modules/**', '**/dist/**', '**/coverage/**'],
+          setupFiles: ['./vitest.setup.dom.ts'],
+          globals: true,
+        },
+      },
+      // ─── Level 2: Component — RTL + jsdom + jest-axe ──────────────────────
+      {
+        resolve: { alias },
         test: {
           name: 'dom',
           environment: 'jsdom',

@@ -1,6 +1,10 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-orange-brand: #c47800;
+  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.06);
+  --radius-xl2: 1rem;
+}
 
 .sr-only {
   position: absolute;

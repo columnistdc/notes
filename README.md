@@ -25,3 +25,17 @@ A simple web application for creating text notes with voice input (Web Speech AP
 npm i
 npm run dev
 ```
+
+## Base Path
+
+The app is built for a GitHub Pages project site, so it defaults to the
+`/notes/` base path. Override it with the `BASE_PATH` env var when deploying
+to a custom domain or the site root:
+
+```bash
+BASE_PATH=/ npm run build        # served at the domain root
+BASE_PATH=/app/ npm run build    # served under /app/
+```
+
+The router reads `import.meta.env.BASE_URL`, so it follows `BASE_PATH`
+automatically — no extra configuration needed.

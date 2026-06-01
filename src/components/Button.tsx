@@ -1,6 +1,7 @@
 import type { ButtonHTMLAttributes } from 'react'
 import { forwardRef } from 'react'
 import clsx from 'clsx'
+import { twMerge } from 'tailwind-merge'
 
 type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
   fullWidth?: boolean
@@ -24,17 +25,19 @@ const Button = forwardRef<HTMLButtonElement, Props>(function Button(
       ref={ref}
       type={type}
       aria-label={ariaLabel}
-      className={clsx(
-        'inline-flex items-center justify-center bg-white transition',
-        'hover:-translate-y-px hover:shadow',
-        'disabled:cursor-not-allowed disabled:opacity-60',
-        'focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
-        'focus-visible:ring-cyan-400 focus-visible:ring-offset-transparent',
-        'border-2 border-[rgba(255,165,0,0.5)]',
-        'focus-visible:border-cyan-400',
-        sizeClasses,
-        fullWidth && 'w-full',
-        className,
+      className={twMerge(
+        clsx(
+          'inline-flex items-center justify-center bg-white transition',
+          'hover:-translate-y-px hover:shadow',
+          'disabled:cursor-not-allowed disabled:opacity-60',
+          'focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+          'focus-visible:ring-cyan-400 focus-visible:ring-offset-transparent',
+          'border-2 border-[rgba(255,165,0,0.5)]',
+          'focus-visible:border-cyan-400',
+          sizeClasses,
+          fullWidth && 'w-full',
+          className,
+        ),
       )}
       {...props}
     />

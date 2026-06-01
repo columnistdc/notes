@@ -27,18 +27,19 @@ export function useDeleteMemo(options: UseDeleteMemoOptions = {}): DeleteMemoHoo
   }, [])
 
   const handleDeleteSelectedMemo = useCallback(async () => {
-    if (!selectedMemo.current) {
+    const memoId = selectedMemo.current
+    if (!memoId) {
       console.error('Cannot delete memo: No memo ID selected')
       return
     }
 
     try {
-      await deleteMemo(selectedMemo.current)
+      await deleteMemo(memoId)
       await onDelete?.()
       setIsDeleteConfirmShown(false)
       selectedMemo.current = null
     } catch (error) {
-      console.error(`Failed to delete memo ID ${selectedMemo.current}:`, error)
+      console.error(`Failed to delete memo ID ${String(memoId)}:`, error)
     }
   }, [onDelete])
 

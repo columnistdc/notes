@@ -5,7 +5,7 @@ import { memosDB } from './db.ts'
 
 export async function countMemos(): Promise<number> {
   try {
-    return memosDB.memos.count()
+    return await memosDB.memos.count()
   } catch (error) {
     console.error('Error counting memos:', error)
     return 0
@@ -15,7 +15,7 @@ export async function countMemos(): Promise<number> {
 export async function createMemo(text: string, title?: string): Promise<number> {
   const now = Date.now()
   try {
-    return memosDB.memos.add({
+    return await memosDB.memos.add({
       text,
       createdAt: now,
       updatedAt: now,
@@ -45,17 +45,31 @@ export async function getMemoById(id: number): Promise<Memo | undefined> {
   }
 }
 
+export class MemoConflictError extends Error {
+  constructor() {
+    super('Memo was modified in another tab')
+    this.name = 'MemoConflictError'
+  }
+}
+
 export async function updateMemoById(
   id: number,
   updates: Partial<Pick<Memo, 'text' | 'title'>>,
+  expectedUpdatedAt?: number,
 ): Promise<void> {
   try {
     const now = Date.now()
-    await memosDB.memos.update(id, {
-      ...updates,
-      updatedAt: now,
+    await memosDB.transaction('rw', memosDB.memos, async () => {
+      if (expectedUpdatedAt !== undefined) {
+        const current = await memosDB.memos.get(id)
+        if (current && current.updatedAt !== expectedUpdatedAt) {
+          throw new MemoConflictError()
+        }
+      }
+      await memosDB.memos.update(id, { ...updates, updatedAt: now })
     })
   } catch (error) {
+    if (error instanceof MemoConflictError) throw error
     console.error('Error updating memo by id:', error)
     throw new Error('Failed to update memo')
   }
@@ -63,7 +77,7 @@ export async function updateMemoById(
 
 export async function listMemoSummaries(): Promise<Memo[]> {
   try {
-    return memosDB.memos.orderBy('updatedAt').reverse().toArray()
+    return await memosDB.memos.orderBy('updatedAt').reverse().toArray()
   } catch (error) {
     console.error('Error listing memos:', error)
     return []

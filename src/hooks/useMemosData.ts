@@ -5,23 +5,53 @@ import type { Memo } from '@/db/types.ts'
 
 interface MemosData {
   items: Memo[] | null
+  loadError: boolean
   refetchItems: () => Promise<void>
 }
 
 export function useMemosData(): MemosData {
   const [items, setItems] = useState<Memo[] | null>(null)
+  const [loadError, setLoadError] = useState(false)
 
   const refetchItems = useCallback(async () => {
-    const data = await listMemoSummaries()
-    setItems(data)
+    try {
+      const memos = await listMemoSummaries()
+      setItems(memos)
+      setLoadError(false)
+    } catch {
+      setLoadError(true)
+    }
   }, [])
 
   useEffect(() => {
-    refetchItems()
+    let active = true
+    listMemoSummaries()
+      .then((memos) => {
+        if (!active) return
+        setItems(memos)
+        setLoadError(false)
+      })
+      .catch(() => {
+        if (active) setLoadError(true)
+      })
+    return () => {
+      active = false
+    }
+  }, [])
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        void refetchItems()
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => { document.removeEventListener('visibilitychange', handleVisibilityChange); }
   }, [refetchItems])
 
   return {
     items,
+    loadError,
     refetchItems,
   }
 }

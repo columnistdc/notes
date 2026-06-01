@@ -1,7 +1,8 @@
-import { type FC, useCallback, useState } from 'react'
+import { type FC, useCallback, useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
 
 import type { MemoPageMode } from '@/constants.ts'
-import { MEMO_DRAFT_KEY } from '@/constants.ts'
+import { SAVED_INDICATOR_MS, TAB_DRAFT_KEY } from '@/constants.ts'
 import { usePageFlow } from '@/hooks/usePageFlow.ts'
 import { useSaveAlert } from '@/hooks/useSaveAlert.ts'
 import { useTextController } from '@/hooks/useTextController.ts'
@@ -17,12 +18,15 @@ interface Props {
 }
 
 export const MemoPage: FC<Props> = ({ mode }) => {
+  const { id: memoId } = useParams<{ id: string }>()
   const [hasChanges, setHasChanges] = useState(false)
+  const [saved, setSaved] = useState(false)
   const { showAlert, show: showSaveAlert, hide: hideSaveAlert } = useSaveAlert()
-  const { title, setTitle, text, setText, insertAtCursor, textareaRef } = useTextController({
-    mode,
-    draftKey: MEMO_DRAFT_KEY,
-  })
+  const [saveError, setSaveError] = useState(false)
+  const [conflictError, setConflictError] = useState(false)
+
+  const { title, setTitle, text, setText, insertAtCursor, textareaRef, loadedUpdatedAt } =
+    useTextController({ mode, draftKey: TAB_DRAFT_KEY, memoId })
 
   const { saving, showConfirm, setShowConfirm, handleBack, saveNote, discardAndLeave } =
     usePageFlow({
@@ -30,50 +34,75 @@ export const MemoPage: FC<Props> = ({ mode }) => {
       title,
       mode,
       hasChanges,
-      draftKey: MEMO_DRAFT_KEY,
-      onSave: () => setHasChanges(false),
-      onDiscard: () => setHasChanges(false),
+      draftKey: TAB_DRAFT_KEY,
+      memoId,
+      expectedUpdatedAt: loadedUpdatedAt,
+      onSave: () => {
+        setHasChanges(false)
+        setSaved(true)
+      },
+      onDiscard: () => { setHasChanges(false); },
       onValidationError: showSaveAlert,
+      onSaveError: () => { setSaveError(true); },
+      onConflict: () => { setConflictError(true); },
     })
+
+  useEffect(() => {
+    if (!saved || saving) return
+    const timer = setTimeout(() => { setSaved(false); }, SAVED_INDICATOR_MS)
+    return () => { clearTimeout(timer); }
+  }, [saved, saving])
+
+  const markChanged = useCallback(() => {
+    setHasChanges(true)
+    setSaved(false)
+    hideSaveAlert()
+    setSaveError(false)
+    setConflictError(false)
+  }, [hideSaveAlert])
 
   const onDictation = useCallback(
     (result: string) => {
       if (!result) return
       insertAtCursor(result + ' ')
+      markChanged()
     },
-    [insertAtCursor],
+    [insertAtCursor, markChanged],
   )
 
   const handleSave = useCallback(() => {
     hideSaveAlert()
-    saveNote()
+    setSaveError(false)
+    setConflictError(false)
+    void saveNote()
   }, [saveNote, hideSaveAlert])
 
   const handleChangeText = useCallback(
     (value: string) => {
       setText(value)
-      setHasChanges(true)
-      hideSaveAlert()
+      markChanged()
     },
-    [setText, hideSaveAlert],
+    [setText, markChanged],
   )
 
   const handleSetTitle = useCallback(
     (value: string) => {
       setTitle(value)
-      setHasChanges(true)
-      hideSaveAlert()
+      markChanged()
     },
-    [setTitle, hideSaveAlert],
+    [setTitle, markChanged],
   )
 
   return (
     <div className="flex min-h-screen flex-col bg-[#FFFBEA] text-slate-900" id="main-content">
       <MemoHeader
-        onBack={handleBack}
+        onBack={() => {
+          void handleBack()
+        }}
         onSave={handleSave}
         saving={saving}
-        canSave={text.trim().length > 0 || title.trim().length > 0}
+        canSave={hasChanges && (text.trim().length > 0 || title.trim().length > 0)}
+        saved={saved}
         mode={mode}
         title={title}
       />
@@ -83,6 +112,12 @@ export const MemoPage: FC<Props> = ({ mode }) => {
       </div>
 
       <SaveAlert show={showAlert} />
+      <SaveAlert show={saveError} message="Failed to save memo. Please try again." variant="error" />
+      <SaveAlert
+        show={conflictError}
+        message="This memo was modified in another tab. Reload the page to get the latest version before saving."
+        variant="error"
+      />
 
       <TextEditor
         text={text}
@@ -93,8 +128,10 @@ export const MemoPage: FC<Props> = ({ mode }) => {
 
       <ConfirmDialog
         show={showConfirm}
-        onCancel={() => setShowConfirm(false)}
-        onDiscard={discardAndLeave}
+        onCancel={() => { setShowConfirm(false); }}
+        onDiscard={() => {
+          void discardAndLeave()
+        }}
         onSave={handleSave}
       />
     </div>
