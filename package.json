@@ -29,7 +29,7 @@
   "dependencies": {
     "clsx": "2.1.1",
     "dexie": "4.4.3",
-    "react": "19.2.6",
+    "react": "19.2.7",
     "react-dom": "19.2.6",
     "react-router-dom": "7.16.0",
     "tailwind-merge": "3.6.0"
@@ -42,7 +42,7 @@
     "@testing-library/user-event": "14.6.1",
     "@types/dom-speech-recognition": "0.0.11",
     "@types/jest-axe": "3.5.9",
-    "@types/react": "19.2.15",
+    "@types/react": "19.2.16",
     "@types/react-dom": "19.2.3",
     "@typescript-eslint/eslint-plugin": "8.60.0",
     "@typescript-eslint/parser": "8.60.0",
